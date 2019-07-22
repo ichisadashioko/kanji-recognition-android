@@ -26,7 +26,7 @@ class KanjiClassifier constructor(activity: Activity) {
         /**
          * Number of results to show in the UI.
          */
-        const val MAX_RESULTS = 5
+        const val MAX_RESULTS = 128
         /**
          * Dimensions of inputs.
          */
