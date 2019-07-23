@@ -108,13 +108,13 @@ class KanjiClassifier constructor(activity: Activity) {
     }
 
     fun getModelPath(): String {
-//        return "model.tflite"
-        return "kanji_model_v3_model_2019-06-04_05-30-16.tflite"
+        // model filename in assets folder
+        return "etlcb_9b_model.tflite"
     }
 
     fun getLabelPath(): String {
-//        return "labels.txt"
-        return "kanji_labels.txt"
+        // label filename in assets folder
+        return "etlcb_9b_labels.txt"
     }
 
     /**
