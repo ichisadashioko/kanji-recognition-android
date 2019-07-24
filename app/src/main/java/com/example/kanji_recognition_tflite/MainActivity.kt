@@ -1,5 +1,6 @@
 package com.example.kanji_recognition_tflite
 
+import android.graphics.Typeface
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.SystemClock
@@ -41,17 +42,14 @@ class MainActivity : AppCompatActivity() {
             Log.d("TFLite", "[INFERENCE] inference time: $inferenceTime")
 
             for ((idx, result) in results.withIndex()) {
-                Log.d("TFLite", "[INFERENCE] $idx - $result")
+                // Log.d("TFLite", "[INFERENCE] $idx - $result")
                 val resultLL = LinearLayout(applicationContext)
                 resultLL.orientation = LinearLayout.HORIZONTAL
 
-                val label = TextView(applicationContext)
-                label.text = result.title
-                resultLL.addView(label)
-
-                val confidence = TextView(applicationContext)
-                confidence.text = "%.2f %%".format(result.confidence * 100)
-                resultLL.addView(confidence)
+                val resultTV = TextView(applicationContext)
+                resultTV.text = result.toString()
+                resultTV.typeface = Typeface.MONOSPACE
+                resultLL.addView(resultTV)
                 resultPane.addView(resultLL)
             }
         }

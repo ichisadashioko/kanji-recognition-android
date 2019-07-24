@@ -95,7 +95,7 @@ class KanjiClassifier constructor(activity: Activity) {
 
     fun getNumBytesPerChannel(): Int {
         // Float.SIZE / Byte.SIZE
-//        return java.lang.Float.SIZE
+        // return java.lang.Float.SIZE
         return 4 // java.nio.ByteBuffer.putFloat() only writes 4 bytes to the buffer
     }
 
@@ -121,14 +121,6 @@ class KanjiClassifier constructor(activity: Activity) {
      * Memory-map the model file in Assets.
      */
     private fun loadModelFile(activity: Activity): MappedByteBuffer {
-//        Log.d(LOG_TAG, "${getModelPath()}: ${activity.assets.}")
-//        val fileList = activity.resources.assets.list("")
-//        Log.d(LOG_TAG, "Loading model file")
-//        Log.d(LOG_TAG, "File list has ${fileList.size}")
-//        for ((index, file) in fileList.withIndex()) {
-//            Log.d(LOG_TAG, "[ASSETS_FILE] $index - $file")
-//        }
-
         val fileDescriptor = activity.assets.openFd(getModelPath())
         val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
 
@@ -169,8 +161,6 @@ class KanjiClassifier constructor(activity: Activity) {
         }
         val endTime = SystemClock.uptimeMillis() - startTime
         Log.v(LOG_TAG, "Time cost to put values into ByteBuffer: $endTime")
-//        characterBitmap.
-        // y = 0.299*r + 0.587*g + 0.114*b
     }
 
     /**
@@ -278,16 +268,14 @@ class KanjiClassifier constructor(activity: Activity) {
         override fun toString(): String {
             var resultString = "";
             if (id != null) {
-                resultString += "[$id] "
+                resultString += String.format("%-8s", "[$id]")
             }
             if (title != null) {
-                resultString += "$title "
+                resultString += String.format("%-5s", "$title")
             }
-            if (confidence != null) {
-                resultString += String.format("(%.1f%%) ", confidence * 100f)
-            }
+            resultString += String.format("(%.1f%%) ", confidence * 100f)
 
-            return resultString.trim()
+            return resultString;
         }
     }
 }
