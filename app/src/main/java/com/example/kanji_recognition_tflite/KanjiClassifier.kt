@@ -23,20 +23,18 @@ import kotlin.collections.ArrayList
  */
 class KanjiClassifier constructor(activity: Activity) {
     companion object {
-        /**
-         * Number of results to show in the UI.
-         */
+        // static objects are put here.
+
+        // Number of results to show in the UI.
         const val MAX_RESULTS = 128
-        /**
-         * Dimensions of inputs.
-         */
+        // Dimensions of inputs.
         const val DIM_BATCH_SIZE = 1
         const val DIM_PIXEL_SIZE = 1
         const val LOG_TAG = "KanjiClassifier"
     }
 
     /**
-     * Preallocated buffers for storing image data in.
+     * Preallocated buffers to store image data in.
      */
     var intValues = IntArray(getImageSizeX() * getImageSizeY())
     /**
@@ -73,6 +71,7 @@ class KanjiClassifier constructor(activity: Activity) {
         get() = labels.size
 
     init {
+        // initial Tensorflow Lite Interpreter
         tfliteModel = loadModelFile(activity)
         tfliteOptions = Interpreter.Options()
         tfliteOptions.setNumThreads(numThreads)
