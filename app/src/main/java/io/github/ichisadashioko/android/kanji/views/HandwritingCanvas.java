@@ -15,33 +15,51 @@ import android.view.View;
 public class HandwritingCanvas extends View {
     public static final int IMAGE_WIDTH = 64;
     public static final int IMAGE_HEIGHT = 64;
+    private static final Rect IMAGE_RECT = new Rect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
     public static final int VIEW_BACKGROUND_COLOR = Color.argb(255, 22, 22, 22);
     public static final int STROKE_COLOR = Color.WHITE;
     public static final int IMAGE_BACKGROUND_COLOR = Color.BLACK;
     public static final float STROKE_WIDTH = 2.5f;
 
+    // variables for scaling the `canvasImage` on the View
     private int imageScale;
     private Point imageOffset;
-    private boolean penDown;
-    private Rect imageRect;
     private Rect scaledRect;
 
+    /**
+     * We don't support multi-touch so this variable is used to indicate the writing
+     * state.
+     */
+    private boolean penDown;
+
+    /**
+     * `canvasImage` is the area that the user will write/draw on. It will also be
+     * used to export the data for using in the recognition interpreter.
+     */
     private Bitmap canvasImage;
+    /**
+     * We cannot draw directly on `canvasImage`. We have to draw on a `Canvas` that
+     * wraps our `canvasImage`.
+     */
     private Canvas drawingCanvas;
+    /**
+     * `imagePath` is used to store information about what user had drawn on the
+     * View. It is then later be used to render on the `canvasImage`.
+     */
     private Path imagePath;
 
     public HandwritingCanvas(Context context, AttributeSet attrs) {
         super(context, attrs);
-        imageOffset = new Point();
-        penDown = false;
-        imagePath = new Path();
         canvasImage = Bitmap.createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT, Bitmap.Config.ARGB_8888);
         drawingCanvas = new Canvas(canvasImage);
+        imagePath = new Path();
 
+        imageOffset = new Point();
         imageScale = 1;
-        imageRect = new Rect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-        scaledRect = new Rect(imageRect);
+        scaledRect = new Rect(IMAGE_RECT);
         clearCanvas();
+
+        penDown = false;
     }
 
     public void clearCanvas() {
@@ -88,6 +106,7 @@ public class HandwritingCanvas extends View {
                 actionMove(event.getX(), event.getY());
                 break;
         }
+        invalidate();
         return true;
     }
 
@@ -107,7 +126,7 @@ public class HandwritingCanvas extends View {
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(false);
 
-        drawingCanvas.drawRect(imageRect, paint);
+        drawingCanvas.drawRect(IMAGE_RECT, paint);
     }
 
     private void drawStrokes() {
@@ -132,7 +151,7 @@ public class HandwritingCanvas extends View {
         super.onDraw(canvas);
         drawViewBackground(canvas);
         prepareImage();
-        canvas.drawBitmap(canvasImage, imageRect, scaledRect, null);
+        canvas.drawBitmap(canvasImage, IMAGE_RECT, scaledRect, null);
     }
 
     private void modifyImageScale(int viewWidth, int viewHeight) {
