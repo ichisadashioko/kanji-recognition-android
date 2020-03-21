@@ -39,7 +39,7 @@ public class OldClassifier {
     public OldClassifier(Activity activity) throws IOException {
         tfliteModel = loadModelFile(activity);
         tfliteOptions = new Interpreter.Options();
-        tfliteOptions.setNumThreads(4);
+        tfliteOptions.setNumThreads(Runtime.getRuntime().availableProcessors());
         tfliteOptions.setUseNNAPI(true);
         tflite = new Interpreter(tfliteModel, tfliteOptions);
 

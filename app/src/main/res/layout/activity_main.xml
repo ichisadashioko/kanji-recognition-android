@@ -32,7 +32,6 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/clear"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="#222222"
@@ -43,6 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="#222222"
+            android:onClick="runClassifier"
             android:text="run" />
     </LinearLayout>
 
@@ -72,7 +72,7 @@
 
     <io.github.ichisadashioko.android.kanji.views.HandwritingCanvas
         android:id="@+id/canvas"
-        android:background="#474747"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="#474747" />
 </LinearLayout>

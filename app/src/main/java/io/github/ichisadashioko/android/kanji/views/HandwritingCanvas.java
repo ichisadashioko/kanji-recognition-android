@@ -169,4 +169,8 @@ public class HandwritingCanvas extends View {
         modifyImageScale(w, h);
         invalidate();
     }
+
+    public Bitmap getImage() {
+        return canvasImage;
+    }
 }
