@@ -1,68 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".App">
 
-<LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="#000000">
-    <android.support.v7.widget.Toolbar
-            app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/semi_transparent">
-        <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/tfl_logo"/>
-    </android.support.v7.widget.Toolbar>
-    <android.support.constraint.ConstraintLayout
-            android:id="@+id/button_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#333333"
+            android:textIsSelectable="true" />
+
         <Button
-                android:id="@+id/clear_btn"
-                app:layout_constraintTop_toTopOf="@+id/button_layout"
-                app:layout_constraintBottom_toBottomOf="@+id/button_layout"
-                app:layout_constraintLeft_toLeftOf="@id/button_layout"
-                app:layout_constraintRight_toLeftOf="@+id/predict_btn"
-                app:layout_constraintWidth_percent="50"
-                android:text="CLEAR"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:background="#222222"
+            android:text="copy" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
         <Button
-                android:id="@+id/predict_btn"
-                app:layout_constraintTop_toTopOf="@+id/button_layout"
-                app:layout_constraintBottom_toBottomOf="@+id/button_layout"
-                app:layout_constraintRight_toRightOf="@id/button_layout"
-                app:layout_constraintLeft_toRightOf="@id/clear_btn"
-                app:layout_constraintWidth_percent="50"
-                android:text="PREDICT"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#222222"
+            android:text="clear" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#222222"
+            android:text="run" />
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="128px"
+            android:orientation="horizontal">
+
+            <Button
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
-    </android.support.constraint.ConstraintLayout>
-    <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <com.example.kanji_recognition_tflite.WritingCanvas
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/result_scrollview"
-                app:layout_constraintHeight_percent="80"
-                android:id="@+id/canvas"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"/>
-        <ScrollView
-                android:id="@+id/result_scrollview"
-                app:layout_constraintTop_toBottomOf="@id/canvas"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_width="match_parent"
-                android:layout_height="200dp">
-            <LinearLayout
-                    android:orientation="vertical"
-                    android:id="@+id/result_output"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"></LinearLayout>
-        </ScrollView>
-    </android.support.constraint.ConstraintLayout>
+                android:layout_height="match_parent"
+                android:background="#222222"
+                android:text="灯" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#222222"
+                android:text="華" />
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <io.github.ichisadashioko.android.kanji.views.HandwritingCanvas
+        android:background="#474747"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>

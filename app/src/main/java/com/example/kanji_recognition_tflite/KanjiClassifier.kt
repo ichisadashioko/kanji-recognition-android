@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.SystemClock
 import android.os.Trace
-import android.support.annotation.RequiresApi
 import android.util.Log
 import org.tensorflow.lite.Interpreter
 import java.io.BufferedReader
@@ -185,7 +184,6 @@ class KanjiClassifier constructor(activity: Activity) {
     /**
      * Runs inference and returns the classification results.
      */
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     fun recognizeImage(bitmap: Bitmap): List<Recognition> {
         // Log this method so that it can be analyzed with systrace.
         Trace.beginSection("recognizeImage")
