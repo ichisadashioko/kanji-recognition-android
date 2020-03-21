@@ -48,25 +48,13 @@
 
     <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="48dp">
 
         <LinearLayout
+            android:id="@+id/result_container"
             android:layout_width="wrap_content"
-            android:layout_height="128px"
-            android:orientation="horizontal">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="#222222"
-                android:text="灯" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="#222222"
-                android:text="華" />
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:orientation="horizontal" />
 
     </HorizontalScrollView>
 

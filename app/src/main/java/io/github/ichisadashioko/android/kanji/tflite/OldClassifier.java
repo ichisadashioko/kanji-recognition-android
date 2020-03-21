@@ -15,7 +15,7 @@ import java.nio.channels.FileChannel;
 import java.util.*;
 
 public class OldClassifier {
-    public static final int MAX_RESULTS = 128;
+    public static final int MAX_RESULTS = 16;
     public static final int DIM_BATCH_SIZE = 1;
     public static final int DIM_PIXEL_SIZE = 1;
     public static final String LOG_TAG = "KanjiClassifier";
