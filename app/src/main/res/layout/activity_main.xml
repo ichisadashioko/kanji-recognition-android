@@ -11,18 +11,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+        <EditText
+            android:id="@+id/text_renderer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="#333333"
-            android:textIsSelectable="true" />
+            android:inputType="text"
+            android:maxLines="1" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0"
             android:background="#222222"
+            android:onClick="copyTextToClipboard"
             android:text="copy" />
     </LinearLayout>
 
@@ -34,21 +37,43 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="#222222"
             android:onClick="clearCanvas"
-            android:text="clear" />
+            android:paddingLeft="@dimen/button_padding"
+            android:paddingRight="@dimen/button_padding"
+            android:text="clear canvas" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="#222222"
+            android:onClick="clearText"
+            android:paddingLeft="@dimen/button_padding"
+            android:paddingRight="@dimen/button_padding"
+            android:text="clear text" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:onClick="runClassifier"
-            android:text="run" />
+            android:paddingLeft="@dimen/button_padding"
+            android:paddingRight="@dimen/button_padding"
+            android:text="evaluate input" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ToggleButton
+            android:id="@+id/auto_evaluate"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textOff="enable auto evaluate on touch up"
+            android:textOn="disable auto evaluate" />
     </LinearLayout>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="48dp">
+        android:layout_height="@dimen/result_size">
 
         <LinearLayout
             android:id="@+id/result_container"

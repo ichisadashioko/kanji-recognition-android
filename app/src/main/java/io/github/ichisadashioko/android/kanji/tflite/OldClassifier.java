@@ -113,7 +113,8 @@ public class OldClassifier {
         PriorityQueue<Recognition> pq = new PriorityQueue<>(NUM_LABELS, new Comparator<Recognition>() {
             @Override
             public int compare(Recognition a, Recognition b) {
-                return Float.compare(a.confidence, b.confidence);
+                // we want to sort descending
+                return Float.compare(b.confidence, a.confidence);
             }
         });
 
