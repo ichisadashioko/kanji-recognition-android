@@ -9,7 +9,8 @@ import android.view.View;
 public class ResultButton extends View {
     public static final int LABEL_SIZE_RATIO_BITS_SHIFT = 1;
     public static final int CONFIDENCE_SIZE_RATIO_BITS_SHIFT = 2;
-    static Typeface FONT = Typeface.MONOSPACE;
+    public static Typeface LABEL_FONT = Typeface.MONOSPACE;
+    public static Typeface CONFIDENCE_FONT = Typeface.MONOSPACE;
     public final String label;
     public final float confidence;
 
@@ -41,10 +42,10 @@ public class ResultButton extends View {
 
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setTextSize(labelFontSize);
-        mTextPaint.setTypeface(FONT);
+        mTextPaint.setTypeface(LABEL_FONT);
         canvas.drawText(label, labelX, labelY, mTextPaint);
         mTextPaint.setTextSize(confidenceFontSize);
-        mTextPaint.setTypeface(FONT);
+        mTextPaint.setTypeface(CONFIDENCE_FONT);
         canvas.drawText(confidenceToString(), confidenceX, confidenceY, mTextPaint);
 
         // draw bounding boxes for debug
@@ -69,14 +70,14 @@ public class ResultButton extends View {
         // change font size and measure text size to center them
         labelFontSize = h >> LABEL_SIZE_RATIO_BITS_SHIFT;
         mTextPaint.setTextSize(labelFontSize);
-        mTextPaint.setTypeface(FONT);
+        mTextPaint.setTypeface(LABEL_FONT);
         labelTextWidth = mTextPaint.measureText(label);
         labelX = Math.max(0, (w - labelTextWidth)) / 2;
         labelY = h * 0.6f;
 
         confidenceFontSize = h >> CONFIDENCE_SIZE_RATIO_BITS_SHIFT;
         mTextPaint.setTextSize(confidenceFontSize);
-        mTextPaint.setTypeface(FONT);
+        mTextPaint.setTypeface(CONFIDENCE_FONT);
         confidenceTextWidth = mTextPaint.measureText(confidenceToString());
         confidenceX = Math.max(0, (w - confidenceTextWidth)) / 2;
         confidenceY = h * 0.9f;

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.View;
@@ -21,6 +23,8 @@ import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
 import io.github.ichisadashioko.android.kanji.views.ResultButton;
 
 public class App extends Activity {
+    public static final String KANJI_FONT_PATH = "fonts/HGKyokashotai_Medium.ttf";
+
     private HandwritingCanvas canvas;
     private OldClassifier tflite;
     private LinearLayout resultContainer;
@@ -56,6 +60,9 @@ public class App extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Typeface typeface = Typeface.createFromAsset(getAssets(), KANJI_FONT_PATH);
+        ResultButton.LABEL_FONT = typeface;
     }
 
     public void clearCanvas(View view) {
