@@ -17,7 +17,7 @@ import android.widget.ToggleButton;
 import java.io.IOException;
 import java.util.List;
 
-import io.github.ichisadashioko.android.kanji.tflite.OldClassifier;
+import io.github.ichisadashioko.android.kanji.tflite.KanjiClassifier;
 import io.github.ichisadashioko.android.kanji.tflite.Recognition;
 import io.github.ichisadashioko.android.kanji.views.TouchCallback;
 import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
@@ -27,7 +27,7 @@ public class App extends Activity implements TouchCallback {
     public static final String KANJI_FONT_PATH = "fonts/HGKyokashotai_Medium.ttf";
 
     private HandwritingCanvas canvas;
-    private OldClassifier tflite;
+    private KanjiClassifier tflite;
     private LinearLayout resultContainer;
     private int resultViewWidth;
     private EditText textRenderer;
@@ -66,7 +66,7 @@ public class App extends Activity implements TouchCallback {
         canvas.touchCallback = this;
 
         try {
-            tflite = new OldClassifier(this);
+            tflite = new KanjiClassifier(this);
         } catch (IOException e) {
             e.printStackTrace();
         }
