@@ -23,6 +23,13 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0"
+            android:onClick="clearText"
+            android:text="clear" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
             android:onClick="copyTextToClipboard"
             android:text="copy" />
     </LinearLayout>
@@ -32,29 +39,19 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textOff="enable auto clear"
+            android:textOn="disable auto clear" />
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:onClick="clearCanvas"
-            android:paddingLeft="@dimen/button_padding"
-            android:paddingRight="@dimen/button_padding"
             android:text="clear canvas" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:onClick="clearText"
-            android:paddingLeft="@dimen/button_padding"
-            android:paddingRight="@dimen/button_padding"
-            android:text="clear text" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:onClick="runClassifier"
-            android:paddingLeft="@dimen/button_padding"
-            android:paddingRight="@dimen/button_padding"
-            android:text="evaluate input" />
     </LinearLayout>
 
     <LinearLayout
@@ -65,8 +62,14 @@
             android:id="@+id/auto_evaluate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textOff="enable auto evaluate on touch up"
+            android:textOff="enable auto evaluate"
             android:textOn="disable auto evaluate" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:onClick="runClassifier"
+            android:text="evaluate input" />
     </LinearLayout>
 
     <HorizontalScrollView
