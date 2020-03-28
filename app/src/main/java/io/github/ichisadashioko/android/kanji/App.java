@@ -32,6 +32,7 @@ public class App extends Activity implements TouchCallback {
     private int resultViewWidth;
     private EditText textRenderer;
     private boolean autoEvaluate;
+    private boolean autoClear;
     private Typeface kanjiTypeface;
 
     @Override
@@ -44,16 +45,21 @@ public class App extends Activity implements TouchCallback {
         resultViewWidth = (int) getResources().getDimension(R.dimen.result_size);
         textRenderer = (EditText) findViewById(R.id.text_renderer);
 
-        ToggleButton autoButton = (ToggleButton) findViewById(R.id.auto_evaluate);
-        autoEvaluate = autoButton.isChecked();
-        autoButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ToggleButton autoEvaluateToggleButton = (ToggleButton) findViewById(R.id.auto_evaluate);
+        autoEvaluate = autoEvaluateToggleButton.isChecked();
+        autoEvaluateToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    autoEvaluate = true;
-                } else {
-                    autoEvaluate = false;
-                }
+                autoEvaluate = isChecked;
+            }
+        });
+
+        ToggleButton autoClearToggleButton = (ToggleButton) findViewById(R.id.auto_clear);
+        autoClear = autoClearToggleButton.isChecked();
+        autoClearToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                autoClear = isChecked;
             }
         });
 
@@ -86,6 +92,9 @@ public class App extends Activity implements TouchCallback {
             public void onClick(View v) {
                 textRenderer.setText(textRenderer.getText() + btn.label);
                 textRenderer.setSelection(textRenderer.getText().length());
+                if (autoClear) {
+                    clearCanvas(v);
+                }
             }
         });
         return btn;
