@@ -1,4 +1,8 @@
-# Tensorflow on Android (Image classification)
+# Kanji Handwriting Input on Android with TensorFlow Lite
+
+![Imgur](https://i.imgur.com/DHxXd0F.png)
+
+[Demo video](https://youtu.be/NzCLFQ-zo3k)
 
 ## Requirements
 
