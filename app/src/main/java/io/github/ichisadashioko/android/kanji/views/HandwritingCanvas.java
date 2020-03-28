@@ -21,6 +21,8 @@ public class HandwritingCanvas extends View {
     public static final int IMAGE_BACKGROUND_COLOR = Color.BLACK;
     public static final float STROKE_WIDTH = 2.5f;
 
+    public TouchCallback touchCallback;
+
     // variables for scaling the `canvasImage` on the View
     private int imageScale;
     private Point imageOffset;
@@ -106,7 +108,13 @@ public class HandwritingCanvas extends View {
                 actionMove(event.getX(), event.getY());
                 break;
         }
+
         invalidate();
+
+        if (touchCallback != null) {
+            touchCallback.onTouchEnd();
+        }
+
         return true;
     }
 

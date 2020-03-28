@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="#333333"
             android:inputType="text"
             android:maxLines="1" />
 
@@ -24,7 +23,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0"
-            android:background="#222222"
             android:onClick="copyTextToClipboard"
             android:text="copy" />
     </LinearLayout>
@@ -86,6 +84,5 @@
     <io.github.ichisadashioko.android.kanji.views.HandwritingCanvas
         android:id="@+id/canvas"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#474747" />
+        android:layout_height="match_parent" />
 </LinearLayout>

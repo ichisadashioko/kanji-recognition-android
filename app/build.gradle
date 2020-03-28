@@ -9,7 +9,6 @@ android {
     defaultConfig {
         applicationId "io.github.ichisadashioko.android.kanji"
         minSdkVersion 19
-        //noinspection ExpiredTargetSdkVersion
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -35,11 +34,10 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:23.0.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.support:cardview-v7:23.0.0'
     implementation 'com.android.support:design:23.0.0'
 
-    // Tensorflow Lite library
+    // TensorFlow Lite library
     implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly'
     implementation 'org.tensorflow:tensorflow-lite-gpu:0.0.0-nightly'
     implementation 'org.tensorflow:tensorflow-lite-support:0.0.0-nightly'
