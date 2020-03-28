@@ -69,10 +69,6 @@ To create and `Interpreter` you will need the `TFLite` model (`MappedByteBuffer`
 
 In order to run inference (or `model.predict` in Keras) you will need to pre-allocated a `ByteBuffer` for the input and a `float[]` (depend on your model) for the output. The input `ByteBuffer` will need to be fill with your data before calling `Interpreter.run(input, output)`.
 
-Refer to [KanjiClassifier.kt](app/src/main/java/com/example/kanji_recognition_tflite/KanjiClassifier.kt) for the full implementation.
-
-**Note:** In Android Studio, you can copy Kotlin code and paste it in Java file (and reverse) and Android Studio will give you the equivalent of that code.
-
 ## References
 
 - Tensorflow official [example](https://github.com/tensorflow/examples) - too complicated for a simple Android app that perform image classification task. However, they do help with my implementation. You just need to find the right file name to read.
