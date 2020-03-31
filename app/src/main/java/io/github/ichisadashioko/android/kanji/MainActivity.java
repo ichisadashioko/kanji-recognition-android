@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -23,7 +24,7 @@ import io.github.ichisadashioko.android.kanji.views.TouchCallback;
 import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
 import io.github.ichisadashioko.android.kanji.views.ResultButton;
 
-public class App extends Activity implements TouchCallback {
+public class MainActivity extends Activity implements TouchCallback {
     /**
      * We still have to put custom font in `assets` folder but not the `res` folder
      * because accessing font via `id` requires minimum API 26.
@@ -87,6 +88,16 @@ public class App extends Activity implements TouchCallback {
         }
     }
 
+    /**
+     * Create a view to show the recognition in the UI. I also setup event listener for each view
+     * in order to add text if the view is clicked.
+     * <p>
+     * I also plan to save the image/drawing stroke to file so that I can improve the model later.
+     *
+     * @param r     the recognition result
+     * @param image the image associated with the result
+     * @return
+     */
     private View createButtonFromResult(Recognition r, Bitmap image) {
         ResultButton btn = new ResultButton(this, null, r.title, r.confidence);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(resultViewWidth, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -104,6 +115,12 @@ public class App extends Activity implements TouchCallback {
         return btn;
     }
 
+    /**
+     * Get the image from the canvas and use the tflite model to evaluate the image.
+     * After the results are returned, show them on the UI.
+     *
+     * @param view the View that triggers this method.
+     */
     public void runClassifier(View view) {
         if (canvas == null || tflite == null || resultContainer == null) {
             return;
@@ -124,6 +141,11 @@ public class App extends Activity implements TouchCallback {
         }
     }
 
+    /**
+     * Copy the text showed at the UI to clipboard so that users can paste it anywhere they want.
+     *
+     * @param view the View that triggers this method.
+     */
     public void copyTextToClipboard(View view) {
         if (textRenderer.getText().length() > 0) {
             ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
@@ -132,14 +154,31 @@ public class App extends Activity implements TouchCallback {
         }
     }
 
+    /**
+     * Clear text showing in the UI.
+     */
     public void clearText(View view) {
         textRenderer.setText("");
     }
 
+    /**
+     * This the callback method that will be called by the drawing canvas because if we attach
+     * event listener to the drawing canvas, it will override the drawing logic.
+     */
     @Override
     public void onTouchEnd() {
         if (autoEvaluate) {
             runClassifier(null);
         }
+    }
+
+    /**
+     * Open preference settings view.
+     *
+     * @param view the view that triggers this method
+     */
+    public void openSettings(View view) {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 }
