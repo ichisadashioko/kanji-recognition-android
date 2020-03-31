@@ -4,3 +4,5 @@ local.properties
 .*
 captures
 app/build
+*.png
+*.zip

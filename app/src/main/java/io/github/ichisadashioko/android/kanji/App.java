@@ -24,6 +24,10 @@ import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
 import io.github.ichisadashioko.android.kanji.views.ResultButton;
 
 public class App extends Activity implements TouchCallback {
+    /**
+     * We still have to put custom font in `assets` folder but not the `res` folder
+     * because accessing font via `id` requires minimum API 26.
+     */
     public static final String KANJI_FONT_PATH = "fonts/HGKyokashotai_Medium.ttf";
 
     private HandwritingCanvas canvas;
