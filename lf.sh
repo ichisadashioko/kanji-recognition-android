@@ -1,3 +1,4 @@
+#!/bin/bash
 find . -type f \
     -not -path "./app/build/*" \
     -not -path "./.git/*" \
