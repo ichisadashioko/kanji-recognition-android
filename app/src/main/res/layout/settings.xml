@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/settings_container"
-        android:name="io.github.ichisadashioko.android.kanji.views.SettingsFragment"
+        android:name="io.github.ichisadashioko.android.kanji.SettingsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1" />
