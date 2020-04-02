@@ -1,6 +1,7 @@
 package io.github.ichisadashioko.android.kanji;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,5 +17,9 @@ public class SettingsActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.settings_container, new SettingsFragment())
                 .commit();
+    }
+
+    public void closeSettings(View v) {
+        this.finish();
     }
 }

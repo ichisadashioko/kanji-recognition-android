@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Kanji Handwriting</string>
+    <string name="pref_key_save_data">SAVE_WRITING_DATA</string>
 </resources>
