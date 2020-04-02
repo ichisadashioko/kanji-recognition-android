@@ -1,25 +1,32 @@
 package io.github.ichisadashioko.android.kanji;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
+import androidx.core.content.ContextCompat;
+
 import java.io.IOException;
 import java.util.List;
 
 import io.github.ichisadashioko.android.kanji.tflite.KanjiClassifier;
 import io.github.ichisadashioko.android.kanji.tflite.Recognition;
+import io.github.ichisadashioko.android.kanji.views.CanvasPoint2D;
 import io.github.ichisadashioko.android.kanji.views.TouchCallback;
 import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
 import io.github.ichisadashioko.android.kanji.views.ResultButton;
@@ -88,6 +95,13 @@ public class MainActivity extends Activity implements TouchCallback {
         }
     }
 
+    private boolean canSaveWritingData() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isAllowSaving = sharedPreferences.getBoolean(getString(R.string.pref_key_save_data), false);
+        boolean permissionGranted = (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+        return isAllowSaving && permissionGranted;
+    }
+
     /**
      * Create a view to show the recognition in the UI. I also setup event listener for each view
      * in order to add text if the view is clicked.
@@ -98,7 +112,7 @@ public class MainActivity extends Activity implements TouchCallback {
      * @param image the image associated with the result
      * @return
      */
-    private View createButtonFromResult(Recognition r, Bitmap image) {
+    private View createButtonFromResult(Recognition r, Bitmap image, List<CanvasPoint2D> writingStrokes) {
         ResultButton btn = new ResultButton(this, null, r.title, r.confidence);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(resultViewWidth, LinearLayout.LayoutParams.MATCH_PARENT);
         btn.setLayoutParams(layoutParams);
@@ -107,6 +121,9 @@ public class MainActivity extends Activity implements TouchCallback {
             public void onClick(View v) {
                 textRenderer.setText(textRenderer.getText() + btn.label);
                 textRenderer.setSelection(textRenderer.getText().length());
+                if (canSaveWritingData()) {
+                    // save image and writing strokes to files
+                }
                 if (autoClear) {
                     clearCanvas(v);
                 }
@@ -128,6 +145,7 @@ public class MainActivity extends Activity implements TouchCallback {
 
         long startTime = SystemClock.elapsedRealtime();
         Bitmap image = canvas.getImage();
+        List<CanvasPoint2D> writingStrokes = canvas.getWritingStrokes();
         List<Recognition> results = tflite.recognizeImage(image);
         long evaluateDuration = SystemClock.elapsedRealtime() - startTime;
         System.out.println(String.format("Inference took %d ms.", evaluateDuration));
@@ -137,7 +155,7 @@ public class MainActivity extends Activity implements TouchCallback {
         }
 
         for (Recognition result : results) {
-            resultContainer.addView(createButtonFromResult(result, image));
+            resultContainer.addView(createButtonFromResult(result, image, writingStrokes));
         }
     }
 
