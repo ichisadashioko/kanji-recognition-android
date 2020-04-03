@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".App">
+    tools:context=".MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,19 +19,19 @@
             android:inputType="text"
             android:maxLines="1" />
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0"
             android:onClick="clearText"
-            android:text="clear" />
+            android:src="@drawable/ic_clear" />
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0"
             android:onClick="copyTextToClipboard"
-            android:text="copy" />
+            android:src="@drawable/ic_content_copy" />
     </LinearLayout>
 
     <LinearLayout
@@ -52,6 +52,11 @@
             android:onClick="clearCanvas"
             android:text="clear canvas" />
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="openSettings"
+            android:src="@drawable/ic_settings" />
 
     </LinearLayout>
 

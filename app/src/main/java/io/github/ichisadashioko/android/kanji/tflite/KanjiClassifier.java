@@ -108,6 +108,7 @@ public class KanjiClassifier {
         }
 
         tflite.run(imgData, labelProbArray);
+        long timestamp = System.currentTimeMillis();
 
         // sort the result by confidence
         PriorityQueue<Recognition> pq = new PriorityQueue<>(NUM_LABELS, new Comparator<Recognition>() {
@@ -119,7 +120,7 @@ public class KanjiClassifier {
         });
 
         for (int i = 0; i < NUM_LABELS; i++) {
-            pq.add(new Recognition(i, labels.get(i), labelProbArray[0][i]));
+            pq.add(new Recognition(i, timestamp, labels.get(i), labelProbArray[0][i]));
         }
 
         int returnSize = Math.min(pq.size(), MAX_RESULTS);

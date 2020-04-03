@@ -2,11 +2,13 @@ package io.github.ichisadashioko.android.kanji.tflite;
 
 public class Recognition {
     public final int id;
+    public final long timestamp;
     public final String title;
     public final float confidence;
 
-    public Recognition(int id, String title, float confidence){
+    public Recognition(int id, long timestamp, String title, float confidence) {
         this.id = id;
+        this.timestamp = timestamp;
         this.title = title;
         this.confidence = confidence;
     }

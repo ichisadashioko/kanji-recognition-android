@@ -12,6 +12,12 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 public class HandwritingCanvas extends View {
     public static final int IMAGE_WIDTH = 64;
     public static final int IMAGE_HEIGHT = 64;
@@ -50,6 +56,19 @@ public class HandwritingCanvas extends View {
      */
     private Path imagePath;
 
+    /**
+     * A List used for storing touch points.
+     * <p>
+     * I use `LinkedList` because it seems to faster than `ArrayList` in `add` operation.
+     * <p>
+     * https://dzone.com/articles/arraylist-vs-linkedlist-vs
+     */
+    private List<CanvasPoint2D> writingStrokes = Collections.synchronizedList(new LinkedList<>());
+
+    public List<CanvasPoint2D> getWritingStrokes() {
+        return writingStrokes;
+    }
+
     public HandwritingCanvas(Context context, AttributeSet attrs) {
         super(context, attrs);
         canvasImage = Bitmap.createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT, Bitmap.Config.ARGB_8888);
@@ -66,21 +85,22 @@ public class HandwritingCanvas extends View {
 
     public void clearCanvas() {
         imagePath.reset();
+        writingStrokes.clear();
         invalidate();
     }
 
-    private float scaleBitmapX(float x) {
-        return (x - imageOffset.x) / imageScale;
+    private int scaleBitmapX(float x) {
+        return (int) ((x - imageOffset.x) / imageScale);
     }
 
-    private float scaleBitmapY(float y) {
-        return (y - imageOffset.y) / imageScale;
+    private int scaleBitmapY(float y) {
+        return (int) ((y - imageOffset.y) / imageScale);
     }
 
     private void actionDown(float x, float y) {
         if (!penDown) {
             penDown = true;
-            imagePath.moveTo(scaleBitmapX(x), scaleBitmapY(y));
+            imagePath.moveTo(x, y);
         }
     }
 
@@ -90,22 +110,26 @@ public class HandwritingCanvas extends View {
 
     private void actionMove(float x, float y) {
         if (penDown) {
-            imagePath.lineTo(scaleBitmapX(x), scaleBitmapY(y));
+            imagePath.lineTo(x, y);
         }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
+        CanvasPoint2D scaledPos = new CanvasPoint2D(scaleBitmapX(event.getX()), scaleBitmapY(event.getY()));
+
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                actionDown(event.getX(), event.getY());
+                actionDown(scaledPos.x, scaledPos.y);
+                writingStrokes.add(scaledPos);
                 break;
             case MotionEvent.ACTION_UP:
                 actionUp();
                 break;
             case MotionEvent.ACTION_MOVE:
-                actionMove(event.getX(), event.getY());
+                actionMove(scaledPos.x, scaledPos.y);
+                writingStrokes.add(scaledPos);
                 break;
         }
 
