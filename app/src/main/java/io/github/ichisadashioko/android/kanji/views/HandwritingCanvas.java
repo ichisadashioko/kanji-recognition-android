@@ -69,17 +69,6 @@ public class HandwritingCanvas extends View {
         return writingStrokes;
     }
 
-    //    public int[][] getWritingStrokes() {
-//        int[][] retval = new int[writingStrokes.size()][2];
-//        int index = 0;
-//        for (CanvasPoint2D p : writingStrokes) {
-//            retval[index][0] = p.x;
-//            retval[index][1] = p.y;
-//            index++;
-//        }
-//        return retval;
-//    }
-
     public HandwritingCanvas(Context context, AttributeSet attrs) {
         super(context, attrs);
         canvasImage = Bitmap.createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT, Bitmap.Config.ARGB_8888);
