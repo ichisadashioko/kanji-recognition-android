@@ -12,8 +12,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,9 +61,10 @@ public class HandwritingCanvas extends View {
      * <p>
      * https://dzone.com/articles/arraylist-vs-linkedlist-vs
      */
-    private List<CanvasPoint2D> writingStrokes = Collections.synchronizedList(new LinkedList<>());
+    private List<CanvasPoint2D> currentStroke;
+    private List<List<CanvasPoint2D>> writingStrokes = Collections.synchronizedList(new LinkedList<>());
 
-    public List<CanvasPoint2D> getWritingStrokes() {
+    public List<List<CanvasPoint2D>> getWritingStrokes() {
         return writingStrokes;
     }
 
@@ -97,20 +96,35 @@ public class HandwritingCanvas extends View {
         return (int) ((y - imageOffset.y) / imageScale);
     }
 
-    private void actionDown(float x, float y) {
+    private void actionDown(CanvasPoint2D p) {
         if (!penDown) {
             penDown = true;
-            imagePath.moveTo(x, y);
+            if (currentStroke != null) {
+                writingStrokes.add(currentStroke);
+            }
+            currentStroke = Collections.synchronizedList(new LinkedList<>());
+            currentStroke.add(p);
+            imagePath.moveTo(p.x, p.y);
         }
     }
 
-    private void actionUp() {
+    private void actionUp(CanvasPoint2D p) {
+        if (penDown) {
+            if (currentStroke != null) {
+                currentStroke.add(p);
+                writingStrokes.add(currentStroke);
+                currentStroke = null;
+            }
+        }
         penDown = false;
     }
 
-    private void actionMove(float x, float y) {
+    private void actionMove(CanvasPoint2D p) {
         if (penDown) {
-            imagePath.lineTo(x, y);
+            if (currentStroke != null) {
+                currentStroke.add(p);
+            }
+            imagePath.lineTo(p.x, p.y);
         }
     }
 
@@ -121,15 +135,13 @@ public class HandwritingCanvas extends View {
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                actionDown(scaledPos.x, scaledPos.y);
-                writingStrokes.add(scaledPos);
+                actionDown(scaledPos);
                 break;
             case MotionEvent.ACTION_UP:
-                actionUp();
+                actionUp(scaledPos);
                 break;
             case MotionEvent.ACTION_MOVE:
-                actionMove(scaledPos.x, scaledPos.y);
-                writingStrokes.add(scaledPos);
+                actionMove(scaledPos);
                 break;
         }
 

@@ -126,7 +126,7 @@ public class MainActivity extends Activity implements TouchCallback {
         return filename.replaceAll("[\\\\\\/\\.\\#\\%\\$\\!\\@\\(\\)\\[\\]\\s]+", "_");
     }
 
-    private void exportWritingData(Recognition r, Bitmap image, List<CanvasPoint2D> writingStrokes) {
+    private void exportWritingData(Recognition r, Bitmap image, List<List<CanvasPoint2D>> writingStrokes) {
         // TODO create preference for save location
         try {
             // TODO the image format is ARGB, write our own encoder to encode grayscale PNG
@@ -165,13 +165,19 @@ public class MainActivity extends Activity implements TouchCallback {
 
             writer.name("touches");
             writer.beginArray();
-            Iterator<CanvasPoint2D> iterator = writingStrokes.iterator();
+            Iterator<List<CanvasPoint2D>> iterator = writingStrokes.iterator();
             while (iterator.hasNext()) {
-                CanvasPoint2D p = iterator.next();
-                writer.beginObject();
-                writer.name("x").value(p.x);
-                writer.name("y").value(p.y);
-                writer.endObject();
+                List<CanvasPoint2D> stroke = iterator.next();
+                writer.beginArray();
+                Iterator<CanvasPoint2D> strokeIterator = stroke.iterator();
+                while (strokeIterator.hasNext()) {
+                    CanvasPoint2D p = strokeIterator.next();
+                    writer.beginObject();
+                    writer.name("x").value(p.x);
+                    writer.name("y").value(p.y);
+                    writer.endObject();
+                }
+                writer.endArray();
             }
             writer.endArray();
 
@@ -227,7 +233,7 @@ public class MainActivity extends Activity implements TouchCallback {
      * @param writingStrokes list of touch points
      * @return
      */
-    private View createButtonFromResult(Recognition r, Bitmap image, List<CanvasPoint2D> writingStrokes) {
+    private View createButtonFromResult(Recognition r, Bitmap image, List<List<CanvasPoint2D>> writingStrokes) {
         ResultButton btn = new ResultButton(this, null, r.title, r.confidence);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(resultViewWidth, LinearLayout.LayoutParams.MATCH_PARENT);
         btn.setLayoutParams(layoutParams);
@@ -261,7 +267,8 @@ public class MainActivity extends Activity implements TouchCallback {
 
         // long startTime = SystemClock.elapsedRealtime();
         Bitmap image = canvas.getImage();
-        List<CanvasPoint2D> writingStrokes = canvas.getWritingStrokes();
+        List<List<CanvasPoint2D>> writingStrokes = canvas.getWritingStrokes();
+        System.out.println("Number of strokes: " + writingStrokes.size());
         List<Recognition> results = tflite.recognizeImage(image);
         // long evaluateDuration = SystemClock.elapsedRealtime() - startTime;
         // System.out.println(String.format("Inference took %d ms.", evaluateDuration));
