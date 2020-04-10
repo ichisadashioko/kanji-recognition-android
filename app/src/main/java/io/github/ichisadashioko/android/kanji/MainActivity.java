@@ -17,8 +17,10 @@ import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.JsonWriter;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
@@ -59,15 +61,33 @@ public class MainActivity extends Activity implements TouchCallback {
 
     private HandwritingCanvas canvas;
     private KanjiClassifier tflite;
+
+    // I keep track of this view to scroll to start when we populate the result list.
+    private HorizontalScrollView resultListScrollView;
     private LinearLayout resultContainer;
+
+    // This variable is used to store the pixel value converted from dp value stored in dimens.xml.
+    // I use this value to set the size for the result view.
     private int resultViewWidth;
+
+    // The EditText is used to store the input text.
     private EditText textRenderer;
+
+    // flags for clearing the canvas or evaluating the image data while it's being drawn.
     private boolean autoEvaluate;
     private boolean autoClear;
-    private Typeface kanjiTypeface;
+
+    // Sometimes, we want to store data that the model was not trained or the model give the
+    // correct label to low accuracy point that the correct label does not show in the result list.
+    // We have to manually type the correct label and save it ourselves for future training.
     private EditText customLabelEditText;
+
+    // Variables to keep track of the data that we are currently seeing.
+    // I need these to store custom labels that the model does not have or the model evaluates the
+    // data wrong (not showing in the result list).
     private Bitmap currentEvaluatingImage;
     private List<List<CanvasPoint2D>> currentEvaluatingWritingStrokes;
+
     // I set this to `true` because the text is empty.
     private boolean isTextSaved = true;
 
@@ -81,6 +101,7 @@ public class MainActivity extends Activity implements TouchCallback {
         resultViewWidth = (int) getResources().getDimension(R.dimen.result_size);
         textRenderer = findViewById(R.id.text_renderer);
         customLabelEditText = findViewById(R.id.custom_label);
+        resultListScrollView = findViewById(R.id.result_container_scroll_view);
 
         ToggleButton autoEvaluateToggleButton = findViewById(R.id.auto_evaluate);
         autoEvaluate = autoEvaluateToggleButton.isChecked();
@@ -100,6 +121,9 @@ public class MainActivity extends Activity implements TouchCallback {
             }
         });
 
+        // I add a TouchCallback interface because if we override the event listener, the canvas
+        // is not working correctly. Our custom canvas manually handle touch events, because of
+        // that add EventListener may break out canvas functionality.
         canvas.touchCallback = this;
 
         try {
@@ -108,11 +132,16 @@ public class MainActivity extends Activity implements TouchCallback {
             e.printStackTrace();
         }
 
-        kanjiTypeface = Typeface.createFromAsset(getApplicationContext().getAssets(), KANJI_FONT_PATH);
+        // This is a Kanji handwriting font. It looks much better than the default font.
+        Typeface kanjiTypeface = Typeface.createFromAsset(getApplicationContext().getAssets(), KANJI_FONT_PATH);
         textRenderer.setTypeface(kanjiTypeface);
         ResultButton.LABEL_FONT = kanjiTypeface;
     }
 
+    /**
+     * Check if the saving data preference is turned on and if we have permission to write to
+     * external storage.
+     */
     private boolean canSaveWritingData() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isAllowSaving = sharedPreferences.getBoolean(getString(R.string.pref_key_save_data), false);
@@ -120,6 +149,13 @@ public class MainActivity extends Activity implements TouchCallback {
         return isAllowSaving && permissionGranted;
     }
 
+    /**
+     * The location we want to use to save data has been already taken by some files/directories.
+     * Rename them to back them up.
+     *
+     * @param path the taken file path
+     * @return the available file path can be used for renaming this path
+     */
     private String getBackupFilepath(String path) {
         int counter = 0;
         String backupFilepath = path + "_" + counter;
@@ -132,6 +168,13 @@ public class MainActivity extends Activity implements TouchCallback {
         return backupFilepath;
     }
 
+    /**
+     * Escape all invalid file name characters so that we can save the data with this file name.
+     * All invalid characters are replace with underscore ('_').
+     *
+     * @param filename the string that may become a file name
+     * @return the valid string for a file name
+     */
     private String normalizeFilename(String filename) {
         return filename.replaceAll("[\\\\\\/\\.\\#\\%\\$\\!\\@\\(\\)\\[\\]\\s]+", "_");
     }
@@ -151,16 +194,18 @@ public class MainActivity extends Activity implements TouchCallback {
         // TODO create preference for save location
         try {
             // TODO the image format is ARGB, write our own encoder to encode grayscale PNG
-            // Android does not support grayscale PNG.
+            // Android does not support encoding grayscale PNG from Bitmap.
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             image.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream);
             byte[] grayscalePNGImage = byteArrayOutputStream.toByteArray();
             String base64Image = Base64.encodeToString(grayscalePNGImage, Base64.DEFAULT);
+            // convert the base64 string to array of string to shorten the line length in json file.
             String[] wrappedBase64String = base64Image.split("\n");
             // System.out.println(wrappedBase64String.length);
 
             File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             String savePath = downloadDirectory.getAbsolutePath() + "/" + SAVE_DIRECTORY_NAME;
+            // normalize path separators
             savePath = savePath.replaceAll("/+", "/");
             if (!prepareDirectory(savePath)) {
                 throw new Exception(String.format("Cannot create directory: %s", savePath));
@@ -309,6 +354,9 @@ public class MainActivity extends Activity implements TouchCallback {
         for (Recognition result : results) {
             resultContainer.addView(createButtonFromResult(result, currentEvaluatingImage, currentEvaluatingWritingStrokes));
         }
+
+        // scroll the result list to the start
+        resultListScrollView.scrollTo(0, 0);
     }
 
     private void saveWritingHistory(final String text) {
@@ -426,6 +474,24 @@ public class MainActivity extends Activity implements TouchCallback {
 
             if (canSaveWritingData()) {
                 exportWritingData(customLabel, 1f, System.currentTimeMillis(), currentEvaluatingImage, currentEvaluatingWritingStrokes);
+            }
+
+            // After saving the data with custom label, I want to clear the current canvas, clear
+            // the text from custom label input and hide my soft input keyboard. That is a lot of
+            // activities to continue writing after saving custom label.
+            if (autoClear) {
+                // clear the canvas
+                clearCanvas(view);
+                // clear the label text
+                customLabelEditText.setText("");
+                // minimize the virtual input keyboard. Wow, this task seems pretty hard and
+                // controversial.
+                // https://stackoverflow.com/a/17789187/83644034
+                InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                // I know that the view I want to hide the soft keyboard so this really help me save
+                // the trouble of getting focusing view.
+                // TODO I am not sure about the flags. Should I use `HIDE_IMPLICIT_ONLY`?
+                imm.hideSoftInputFromWindow(customLabelEditText.getWindowToken(), 0);
             }
         }
     }

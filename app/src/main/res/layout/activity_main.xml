@@ -101,6 +101,7 @@
     </LinearLayout>
 
     <HorizontalScrollView
+        android:id="@+id/result_container_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="@dimen/result_size">
 
