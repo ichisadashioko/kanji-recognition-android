@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
@@ -24,6 +25,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 
 import java.io.BufferedWriter;
@@ -33,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 
@@ -492,6 +495,26 @@ public class MainActivity extends Activity implements TouchCallback {
                 // the trouble of getting focusing view.
                 // TODO I am not sure about the flags. Should I use `HIDE_IMPLICIT_ONLY`?
                 imm.hideSoftInputFromWindow(customLabelEditText.getWindowToken(), 0);
+            }
+        }
+    }
+
+    public void lookUpMeaningWithJishoDotOrg(View view) {
+        String japaneseText = this.textRenderer.getText().toString();
+        System.out.println("Text to be looked up: " + japaneseText);
+        if (!japaneseText.isEmpty()) {
+            saveWritingHistory(japaneseText);
+
+            try {
+                String encodedText = URLEncoder.encode(japaneseText, "utf-8");
+                System.out.println("Encoded text: " + encodedText);
+
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                builder.setColorScheme(CustomTabsIntent.COLOR_SCHEME_DARK);
+                CustomTabsIntent customTabsIntent = builder.build();
+                customTabsIntent.launchUrl(this, Uri.parse("https://jisho.org/search/" + encodedText));
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }

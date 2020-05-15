@@ -29,6 +29,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.preference:preference:1.1.0'
+    implementation 'androidx.browser:browser:1.2.0'
 
     // TensorFlow Lite library
     implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly'
