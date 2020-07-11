@@ -32,36 +32,34 @@ public class HandwritingCanvas extends View {
     private Point imageOffset;
     private Rect scaledRect;
 
-    /**
-     * We don't support multi-touch so this variable is used to indicate the writing
-     * state.
-     */
+    /** We don't support multi-touch so this variable is used to indicate the writing state. */
     private boolean penDown;
 
     /**
-     * `canvasImage` is the area that the user will write/draw on. It will also be
-     * used to export the data for using in the recognition interpreter.
+     * `canvasImage` is the area that the user will write/draw on. It will also be used to export
+     * the data for using in the recognition interpreter.
      */
     private Bitmap canvasImage;
     /**
-     * We cannot draw directly on `canvasImage`. We have to draw on a `Canvas` that
-     * wraps our `canvasImage`.
+     * We cannot draw directly on `canvasImage`. We have to draw on a `Canvas` that wraps our
+     * `canvasImage`.
      */
     private Canvas drawingCanvas;
     /**
-     * `imagePath` is used to store information about what user had drawn on the
-     * View. It is then later be used to render on the `canvasImage`.
+     * `imagePath` is used to store information about what user had drawn on the View. It is then
+     * later be used to render on the `canvasImage`.
      */
     private Path imagePath;
 
     /**
      * A List used for storing touch points.
-     * <p>
-     * I use `LinkedList` because it seems to faster than `ArrayList` in `add` operation.
-     * <p>
-     * https://dzone.com/articles/arraylist-vs-linkedlist-vs
+     *
+     * <p>I use `LinkedList` because it seems to faster than `ArrayList` in `add` operation.
+     *
+     * <p>https://dzone.com/articles/arraylist-vs-linkedlist-vs
      */
     private List<CanvasPoint2D> currentStroke;
+
     private List<List<CanvasPoint2D>> writingStrokes = Collections.synchronizedList(new LinkedList<>());
 
     public List<List<CanvasPoint2D>> getWritingStrokes() {

@@ -11,3 +11,4 @@ app/build
 .idea
 .settings
 .classpath
+google-java-format-1.8-all-deps.jar

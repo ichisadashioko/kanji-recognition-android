@@ -96,7 +96,7 @@ public class KanjiClassifier {
         }
     }
 
-    public List<Recognition> recognizeImage(Bitmap bitmap) {
+    public synchronized List<Recognition> recognizeImage(Bitmap bitmap) {
         ArrayList<Recognition> results = new ArrayList<>();
 
         try {

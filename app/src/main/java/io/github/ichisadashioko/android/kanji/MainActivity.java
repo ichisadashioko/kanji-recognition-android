@@ -28,67 +28,87 @@ import android.widget.ToggleButton;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 
-import java.io.BufferedWriter;
+import io.github.ichisadashioko.android.kanji.tflite.KanjiClassifier;
+import io.github.ichisadashioko.android.kanji.tflite.Recognition;
+import io.github.ichisadashioko.android.kanji.views.CanvasPoint2D;
+import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
+import io.github.ichisadashioko.android.kanji.views.ResultButton;
+import io.github.ichisadashioko.android.kanji.views.TouchCallback;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 
-import io.github.ichisadashioko.android.kanji.tflite.KanjiClassifier;
-import io.github.ichisadashioko.android.kanji.tflite.Recognition;
-import io.github.ichisadashioko.android.kanji.views.CanvasPoint2D;
-import io.github.ichisadashioko.android.kanji.views.TouchCallback;
-import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
-import io.github.ichisadashioko.android.kanji.views.ResultButton;
-
 public class MainActivity extends Activity implements TouchCallback {
+
     /**
-     * We still have to put custom font in `assets` folder but not the `res` folder
-     * because accessing font via `id` requires minimum API 26.
+     * We still have to put custom font in `assets` folder but not the `res` folder because
+     * accessing font via `id` requires minimum API 26.
      */
     public static final String KANJI_FONT_PATH = "fonts/HGKyokashotai_Medium.ttf";
-    public static final String SAVE_DIRECTORY_NAME = "handwriting_data";
-    public static final String WRITING_LOG_BASENAME = "writing_history_";
+
     /**
-     * 5 KB for text file.
-     * <p>
-     * Each Japanese character takes up around 3 bytes. Each sentence (line) is about 16 characters.
-     * 5 KB will give us 100 lines for each file.
+     * Writing data will be stored in the Downloads directory.
+     *
+     * <p>~/Download/handwriting_data/
+     */
+    public static final String SAVE_DIRECTORY_NAME = "handwriting_data";
+
+    /** ~/Download/handwriting_data/stroke_data/ */
+    public static final String WRITING_STROKE_DATA_DIR_NAME = "stroke_data";
+
+    /** ~/Download/handwriting_data/writing_history/ */
+    public static final String WRITING_LOG_DIR_NAME = "writing_history";
+
+    /**
+     * 5 KBs for text file.
+     *
+     * <p>Each Japanese character takes up around 3 bytes. Each sentence (line) is about 16
+     * characters. 5 KBs will give us 100 lines for each file.
      */
     public static final int MAX_LOG_SIZE = 5 * 1024;
 
     private HandwritingCanvas canvas;
     private KanjiClassifier tflite;
 
-    // I keep track of this view to scroll to start when we populate the result list.
+    /** I keep track of this view to scroll to start when we populate the result list. */
     private HorizontalScrollView resultListScrollView;
+
     private LinearLayout resultContainer;
 
-    // This variable is used to store the pixel value converted from dp value stored in dimens.xml.
-    // I use this value to set the size for the result view.
+    /**
+     * This variable is used to store the pixel value converted from dp value stored in dimens.xml.
+     * I use this value to set the size for the result view.
+     */
     private int resultViewWidth;
 
     // The EditText is used to store the input text.
     private EditText textRenderer;
 
-    // flags for clearing the canvas or evaluating the image data while it's being drawn.
+    /** flags for clearing the canvas or evaluating the image data while it's being drawn. */
     private boolean autoEvaluate;
+
     private boolean autoClear;
 
-    // Sometimes, we want to store data that the model was not trained or the model give the
-    // correct label to low accuracy point that the correct label does not show in the result list.
-    // We have to manually type the correct label and save it ourselves for future training.
+    /**
+     * Sometimes, we want to store data that the model was not trained or the model give the correct
+     * label to low accuracy point that the correct label does not show in the result list. We have
+     * to manually type the correct label and save it ourselves for future training.
+     */
     private EditText customLabelEditText;
 
-    // Variables to keep track of the data that we are currently seeing.
-    // I need these to store custom labels that the model does not have or the model evaluates the
-    // data wrong (not showing in the result list).
+    /**
+     * Variables to keep track of the data that we are currently seeing. I need these to store
+     * custom labels that the model does not have or the model evaluates the data wrong (not showing
+     * in the result list).
+     */
     private Bitmap currentEvaluatingImage;
+
     private List<List<CanvasPoint2D>> currentEvaluatingWritingStrokes;
 
     // I set this to `true` because the text is empty.
@@ -124,9 +144,9 @@ public class MainActivity extends Activity implements TouchCallback {
             }
         });
 
-        // I add a TouchCallback interface because if we override the event listener, the canvas
-        // is not working correctly. Our custom canvas manually handle touch events, because of
-        // that add EventListener may break out canvas functionality.
+        // I add a TouchCallback interface because if we override the event listener,
+        // the canvas is not working correctly. Our custom canvas manually handle touch
+        // events, because of that add EventListener may break out canvas functionality.
         canvas.touchCallback = this;
 
         try {
@@ -192,7 +212,7 @@ public class MainActivity extends Activity implements TouchCallback {
      * @param image          the drawing image of `label`
      * @param writingStrokes list of strokes that create the writing
      */
-    private void exportWritingData(String label, final float confidence, final long timestamp, Bitmap image, List<List<CanvasPoint2D>> writingStrokes) {
+    private synchronized void exportWritingData(String label, final float confidence, final long timestamp, Bitmap image, List<List<CanvasPoint2D>> writingStrokes) {
         long startTime = SystemClock.elapsedRealtime();
         // TODO create preference for save location
         try {
@@ -207,7 +227,7 @@ public class MainActivity extends Activity implements TouchCallback {
             // System.out.println(wrappedBase64String.length);
 
             File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            String savePath = downloadDirectory.getAbsolutePath() + "/" + SAVE_DIRECTORY_NAME;
+            String savePath = downloadDirectory.getAbsolutePath() + "/" + SAVE_DIRECTORY_NAME + "/" + WRITING_STROKE_DATA_DIR_NAME;
             // normalize path separators
             savePath = savePath.replaceAll("/+", "/");
             if (!prepareDirectory(savePath)) {
@@ -272,9 +292,9 @@ public class MainActivity extends Activity implements TouchCallback {
     }
 
     /**
-     * We want to make sure there is a directory with path equals `path`. However,
-     * there may be it is not existed or it is a file. We will `mkdirs` or `rename`
-     * respectively. The `path` must be valid.
+     * We want to make sure there is a directory with path equals `path`. However, there may be it
+     * is not existed or it is a file. We will `mkdirs` or `rename` respectively. The `path` must be
+     * valid.
      *
      * @param path the directory path we want
      */
@@ -300,11 +320,11 @@ public class MainActivity extends Activity implements TouchCallback {
     }
 
     /**
-     * Create a view to show the recognition in the UI. I also setup event listener
-     * for each view in order to add text if the view is clicked.
-     * <p>
-     * I also plan to save the image/drawing stroke to file so that I can improve
-     * the model later.
+     * Create a view to show the recognition in the UI. I also setup event listener for each view in
+     * order to add text if the view is clicked.
+     *
+     * <p>I also plan to save the image/drawing stroke to file so that I can improve the model
+     * later.
      *
      * @param r              the recognition result
      * @param image          the image associated with the result
@@ -332,12 +352,12 @@ public class MainActivity extends Activity implements TouchCallback {
     }
 
     /**
-     * Get the image from the canvas and use the tflite model to evaluate the image.
-     * After the results are returned, show them on the UI.
+     * Get the image from the canvas and use the tflite model to evaluate the image. After the
+     * results are returned, show them on the UI.
      *
      * @param view the View that triggers this method.
      */
-    public void runClassifier(View view) {
+    public synchronized void runClassifier(View view) {
         if (canvas == null || tflite == null || resultContainer == null) {
             return;
         }
@@ -379,12 +399,18 @@ public class MainActivity extends Activity implements TouchCallback {
                 throw new Exception(String.format("Cannot create directory: %s", rootSavePath));
             }
 
+            String writingHistoryDirectoryPath = rootSavePath + "/" + WRITING_LOG_DIR_NAME;
+            if (!prepareDirectory(writingHistoryDirectoryPath)) {
+                throw new Exception(String.format("Cannot create directory: %s", writingHistoryDirectoryPath));
+            }
+
             int indexCounter = 0;
-            String baseSavePath = rootSavePath + "/" + WRITING_LOG_BASENAME;
             String saveFilePath;
             File saveFile;
+
             do {
-                saveFilePath = baseSavePath + String.format("%06d", indexCounter);
+                saveFilePath = writingHistoryDirectoryPath + String.format("%06d.txt", indexCounter);
+                saveFilePath = saveFilePath.replace("/+", "/");
                 saveFile = new File(saveFilePath);
 
                 if (!saveFile.exists()) {
@@ -398,6 +424,7 @@ public class MainActivity extends Activity implements TouchCallback {
                         saveFile.createNewFile();
                     }
                 }
+
                 indexCounter++;
             } while (saveFile.length() > MAX_LOG_SIZE);
 
@@ -413,8 +440,7 @@ public class MainActivity extends Activity implements TouchCallback {
     }
 
     /**
-     * Copy the text showed at the UI to clipboard so that users can paste it
-     * anywhere they want.
+     * Copy the text showed at the UI to clipboard so that users can paste it anywhere they want.
      *
      * @param view the View that triggers this method.
      */
@@ -427,23 +453,26 @@ public class MainActivity extends Activity implements TouchCallback {
         saveWritingHistory(textRenderer.getText().toString());
     }
 
-    /**
-     * Clear text showing in the UI.
-     */
+    /** Clear text showing in the UI. */
     public void clearText(View view) {
         saveWritingHistory(textRenderer.getText().toString());
         textRenderer.setText("");
     }
 
     /**
-     * This the callback method that will be called by the drawing canvas because if
-     * we attach event listener to the drawing canvas, it will override the drawing
-     * logic.
+     * This the callback method that will be called by the drawing canvas because if we attach event
+     * listener to the drawing canvas, it will override the drawing logic.
      */
     @Override
     public void onTouchEnd() {
         if (autoEvaluate) {
-            runClassifier(null);
+            long ts = SystemClock.elapsedRealtime();
+            synchronized (InferenceThread.LastCreatedThreadTimeLock) {
+                InferenceThread.LastCreatedThreadTime = ts;
+            }
+
+            System.out.println("Thread " + ts + " started!");
+            (new InferenceThread(this, ts)).start();
         }
     }
 
