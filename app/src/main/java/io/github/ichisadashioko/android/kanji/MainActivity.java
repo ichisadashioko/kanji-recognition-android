@@ -59,10 +59,10 @@ public class MainActivity extends Activity implements TouchCallback {
      */
     public static final String SAVE_DIRECTORY_NAME = "handwriting_data";
 
-    /** ~/Download/handwriting_data/stroke_data/ */
+    // ~/Download/handwriting_data/stroke_data/
     public static final String WRITING_STROKE_DATA_DIR_NAME = "stroke_data";
 
-    /** ~/Download/handwriting_data/writing_history/ */
+    // ~/Download/handwriting_data/writing_history/
     public static final String WRITING_LOG_DIR_NAME = "writing_history";
 
     /**
@@ -76,7 +76,9 @@ public class MainActivity extends Activity implements TouchCallback {
     private HandwritingCanvas canvas;
     private KanjiClassifier tflite;
 
-    /** I keep track of this view to scroll to start when we populate the result list. */
+    /**
+     * I keep track of this view to scroll to start when we populate the result list.
+     */
     private HorizontalScrollView resultListScrollView;
 
     private LinearLayout resultContainer;
@@ -90,7 +92,9 @@ public class MainActivity extends Activity implements TouchCallback {
     // The EditText is used to store the input text.
     private EditText textRenderer;
 
-    /** flags for clearing the canvas or evaluating the image data while it's being drawn. */
+    /**
+     * flags for clearing the canvas or evaluating the image data while it's being drawn.
+     */
     private boolean autoEvaluate;
 
     private boolean autoClear;
