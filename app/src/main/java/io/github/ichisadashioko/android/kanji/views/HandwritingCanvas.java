@@ -16,43 +16,44 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class HandwritingCanvas extends View {
-    public static final int IMAGE_WIDTH = 64;
-    public static final int IMAGE_HEIGHT = 64;
-    private static final Rect IMAGE_RECT = new Rect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-    public static final int VIEW_BACKGROUND_COLOR = Color.argb(255, 22, 22, 22);
-    public static final int STROKE_COLOR = Color.WHITE;
+public class HandwritingCanvas extends View
+{
+    public static final int IMAGE_WIDTH            = 64;
+    public static final int IMAGE_HEIGHT           = 64;
+    public static final Rect IMAGE_RECT            = new Rect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
+    public static final int VIEW_BACKGROUND_COLOR  = Color.argb(255, 22, 22, 22);
+    public static final int STROKE_COLOR           = Color.WHITE;
     public static final int IMAGE_BACKGROUND_COLOR = Color.BLACK;
-    public static final float STROKE_WIDTH = 2.5f;
+    public static final float STROKE_WIDTH         = 2.5f;
 
     public TouchCallback touchCallback;
 
     // variables for scaling the `canvasImage` on the View
-    private int imageScale;
-    private Point imageOffset;
-    private Rect scaledRect;
+    public int imageScale;
+    public Point imageOffset;
+    public Rect scaledRect;
 
     /**
      * We don't support multi-touch so this variable is used to indicate the writing
      * state.
      */
-    private boolean penDown;
+    public boolean penDown;
 
     /**
      * `canvasImage` is the area that the user will write/draw on. It will also be
      * used to export the data for using in the recognition interpreter.
      */
-    private Bitmap canvasImage;
+    public Bitmap canvasImage;
     /**
      * We cannot draw directly on `canvasImage`. We have to draw on a `Canvas` that
      * wraps our `canvasImage`.
      */
-    private Canvas drawingCanvas;
+    public Canvas drawingCanvas;
     /**
      * `imagePath` is used to store information about what user had drawn on the
      * View. It is then later be used to render on the `canvasImage`.
      */
-    private Path imagePath;
+    public Path imagePath;
 
     /**
      * A List used for storing touch points.
@@ -64,46 +65,54 @@ public class HandwritingCanvas extends View {
      * <p>
      * https://dzone.com/articles/arraylist-vs-linkedlist-vs
      */
-    private List<CanvasPoint2D> currentStroke;
+    public List<CanvasPoint2D> currentStroke;
 
-    private List<List<CanvasPoint2D>> writingStrokes = Collections.synchronizedList(new LinkedList<>());
+    public List<List<CanvasPoint2D>> writingStrokes = Collections.synchronizedList(new LinkedList<>());
 
-    public List<List<CanvasPoint2D>> getWritingStrokes() {
+    public List<List<CanvasPoint2D>> getWritingStrokes()
+    {
         return writingStrokes;
     }
 
-    public HandwritingCanvas(Context context, AttributeSet attrs) {
+    public HandwritingCanvas(Context context, AttributeSet attrs)
+    {
         super(context, attrs);
-        canvasImage = Bitmap.createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT, Bitmap.Config.ARGB_8888);
+        canvasImage   = Bitmap.createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT, Bitmap.Config.ARGB_8888);
         drawingCanvas = new Canvas(canvasImage);
-        imagePath = new Path();
+        imagePath     = new Path();
 
         imageOffset = new Point();
-        imageScale = 1;
-        scaledRect = new Rect(IMAGE_RECT);
+        imageScale  = 1;
+        scaledRect  = new Rect(IMAGE_RECT);
         clearCanvas();
 
         penDown = false;
     }
 
-    public void clearCanvas() {
+    public void clearCanvas()
+    {
         imagePath.reset();
         writingStrokes.clear();
         invalidate();
     }
 
-    private int scaleBitmapX(float x) {
+    public int scaleBitmapX(float x)
+    {
         return (int) ((x - imageOffset.x) / imageScale);
     }
 
-    private int scaleBitmapY(float y) {
+    public int scaleBitmapY(float y)
+    {
         return (int) ((y - imageOffset.y) / imageScale);
     }
 
-    private void actionDown(CanvasPoint2D p) {
-        if (!penDown) {
+    public void actionDown(CanvasPoint2D p)
+    {
+        if (!penDown)
+        {
             penDown = true;
-            if (currentStroke != null) {
+            if (currentStroke != null)
+            {
                 writingStrokes.add(currentStroke);
             }
             currentStroke = Collections.synchronizedList(new LinkedList<>());
@@ -112,9 +121,12 @@ public class HandwritingCanvas extends View {
         }
     }
 
-    private void actionUp(CanvasPoint2D p) {
-        if (penDown) {
-            if (currentStroke != null) {
+    public void actionUp(CanvasPoint2D p)
+    {
+        if (penDown)
+        {
+            if (currentStroke != null)
+            {
                 currentStroke.add(p);
                 writingStrokes.add(currentStroke);
                 currentStroke = null;
@@ -123,9 +135,12 @@ public class HandwritingCanvas extends View {
         penDown = false;
     }
 
-    private void actionMove(CanvasPoint2D p) {
-        if (penDown) {
-            if (currentStroke != null) {
+    public void actionMove(CanvasPoint2D p)
+    {
+        if (penDown)
+        {
+            if (currentStroke != null)
+            {
                 currentStroke.add(p);
             }
             imagePath.lineTo(p.x, p.y);
@@ -133,11 +148,13 @@ public class HandwritingCanvas extends View {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction();
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        int action              = event.getAction();
         CanvasPoint2D scaledPos = new CanvasPoint2D(scaleBitmapX(event.getX()), scaleBitmapY(event.getY()));
 
-        switch (action) {
+        switch (action)
+        {
             case MotionEvent.ACTION_DOWN:
                 actionDown(scaledPos);
                 break;
@@ -151,14 +168,16 @@ public class HandwritingCanvas extends View {
 
         invalidate();
 
-        if (touchCallback != null) {
+        if (touchCallback != null)
+        {
             touchCallback.onTouchEnd();
         }
 
         return true;
     }
 
-    private void drawViewBackground(Canvas canvas) {
+    public void drawViewBackground(Canvas canvas)
+    {
         Paint paint = new Paint();
         paint.setColor(VIEW_BACKGROUND_COLOR);
         paint.setStyle(Paint.Style.FILL);
@@ -168,7 +187,8 @@ public class HandwritingCanvas extends View {
         canvas.drawRect(rect, paint);
     }
 
-    private void drawImageBackground() {
+    public void drawImageBackground()
+    {
         Paint paint = new Paint();
         paint.setColor(IMAGE_BACKGROUND_COLOR);
         paint.setStyle(Paint.Style.FILL);
@@ -177,7 +197,8 @@ public class HandwritingCanvas extends View {
         drawingCanvas.drawRect(IMAGE_RECT, paint);
     }
 
-    private void drawStrokes() {
+    public void drawStrokes()
+    {
         Paint paint = new Paint();
         paint.setColor(STROKE_COLOR);
         paint.setStyle(Paint.Style.STROKE);
@@ -189,21 +210,24 @@ public class HandwritingCanvas extends View {
         drawingCanvas.drawPath(imagePath, paint);
     }
 
-    private void prepareImage() {
+    public void prepareImage()
+    {
         drawImageBackground();
         drawStrokes();
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(Canvas canvas)
+    {
         super.onDraw(canvas);
         drawViewBackground(canvas);
         prepareImage();
         canvas.drawBitmap(canvasImage, IMAGE_RECT, scaledRect, null);
     }
 
-    private void modifyImageScale(int viewWidth, int viewHeight) {
-        imageScale = Math.min((viewWidth / IMAGE_WIDTH), (viewHeight / IMAGE_HEIGHT));
+    public void modifyImageScale(int viewWidth, int viewHeight)
+    {
+        imageScale  = Math.min((viewWidth / IMAGE_WIDTH), (viewHeight / IMAGE_HEIGHT));
         int offsetX = ((viewWidth - (IMAGE_WIDTH * imageScale)) / 2);
         int offsetY = ((viewHeight - (IMAGE_HEIGHT * imageScale)) / 2);
 
@@ -212,13 +236,15 @@ public class HandwritingCanvas extends View {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    protected void onSizeChanged(int w, int h, int oldw, int oldh)
+    {
         super.onSizeChanged(w, h, oldw, oldh);
         modifyImageScale(w, h);
         invalidate();
     }
 
-    public Bitmap getImage() {
+    public Bitmap getImage()
+    {
         return canvasImage;
     }
 }

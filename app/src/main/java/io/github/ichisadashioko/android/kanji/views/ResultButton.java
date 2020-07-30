@@ -6,38 +6,42 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class ResultButton extends View {
-    public static final int LABEL_SIZE_RATIO_BITS_SHIFT = 1;
+public class ResultButton extends View
+{
+    public static final int LABEL_SIZE_RATIO_BITS_SHIFT      = 1;
     public static final int CONFIDENCE_SIZE_RATIO_BITS_SHIFT = 2;
-    public static Typeface LABEL_FONT = Typeface.MONOSPACE;
-    public static Typeface CONFIDENCE_FONT = Typeface.MONOSPACE;
+    public static Typeface LABEL_FONT                        = Typeface.MONOSPACE;
+    public static Typeface CONFIDENCE_FONT                   = Typeface.MONOSPACE;
     public final String label;
     public final float confidence;
 
-    private TextPaint mTextPaint;
-    private int labelFontSize;
-    private float labelTextWidth;
-    private float labelX;
-    private float labelY;
-    private int confidenceFontSize;
-    private float confidenceTextWidth;
-    private float confidenceX;
-    private float confidenceY;
+    public TextPaint mTextPaint;
+    public int labelFontSize;
+    public float labelTextWidth;
+    public float labelX;
+    public float labelY;
+    public int confidenceFontSize;
+    public float confidenceTextWidth;
+    public float confidenceX;
+    public float confidenceY;
 
-    public ResultButton(Context context, AttributeSet attrs, String label, float confidence) {
+    public ResultButton(Context context, AttributeSet attrs, String label, float confidence)
+    {
         super(context, attrs);
-        this.label = label;
+        this.label      = label;
         this.confidence = confidence;
 
         mTextPaint = new TextPaint();
     }
 
-    public String confidenceToString() {
+    public String confidenceToString()
+    {
         return String.format("%.1f%%", confidence * 100);
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(Canvas canvas)
+    {
         super.onDraw(canvas);
 
         mTextPaint.setColor(Color.WHITE);
@@ -64,7 +68,8 @@ public class ResultButton extends View {
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldW, int oldH) {
+    protected void onSizeChanged(int w, int h, int oldW, int oldH)
+    {
         super.onSizeChanged(w, h, oldW, oldH);
 
         // change font size and measure text size to center them
@@ -72,14 +77,14 @@ public class ResultButton extends View {
         mTextPaint.setTextSize(labelFontSize);
         mTextPaint.setTypeface(LABEL_FONT);
         labelTextWidth = mTextPaint.measureText(label);
-        labelX = Math.max(0, (w - labelTextWidth)) / 2;
-        labelY = h * 0.6f;
+        labelX         = Math.max(0, (w - labelTextWidth)) / 2;
+        labelY         = h * 0.6f;
 
         confidenceFontSize = h >> CONFIDENCE_SIZE_RATIO_BITS_SHIFT;
         mTextPaint.setTextSize(confidenceFontSize);
         mTextPaint.setTypeface(CONFIDENCE_FONT);
         confidenceTextWidth = mTextPaint.measureText(confidenceToString());
-        confidenceX = Math.max(0, (w - confidenceTextWidth)) / 2;
-        confidenceY = h * 0.9f;
+        confidenceX         = Math.max(0, (w - confidenceTextWidth)) / 2;
+        confidenceY         = h * 0.9f;
     }
 }

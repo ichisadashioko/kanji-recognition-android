@@ -44,8 +44,8 @@ import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 
-public class MainActivity extends Activity implements TouchCallback {
-
+public class MainActivity extends Activity implements TouchCallback
+{
     /**
      * We still have to put custom font in `assets` folder but not the `res` folder because
      * accessing font via `id` requires minimum API 26.
@@ -73,77 +73,80 @@ public class MainActivity extends Activity implements TouchCallback {
      */
     public static final int MAX_LOG_SIZE = 5 * 1024;
 
-    private HandwritingCanvas canvas;
-    private KanjiClassifier tflite;
+    public HandwritingCanvas canvas;
+    public KanjiClassifier tflite;
 
     /**
      * I keep track of this view to scroll to start when we populate the result list.
      */
-    private HorizontalScrollView resultListScrollView;
+    public HorizontalScrollView resultListScrollView;
 
-    private LinearLayout resultContainer;
+    public LinearLayout resultContainer;
 
     /**
      * This variable is used to store the pixel value converted from dp value stored in dimens.xml.
      * I use this value to set the size for the result view.
      */
-    private int resultViewWidth;
+    public int resultViewWidth;
 
     // The EditText is used to store the input text.
-    private EditText textRenderer;
+    public EditText textRenderer;
 
     /**
      * flags for clearing the canvas or evaluating the image data while it's being drawn.
      */
-    private boolean autoEvaluate;
+    public boolean autoEvaluate;
 
-    private boolean autoClear;
+    public boolean autoClear;
 
     /**
      * Sometimes, we want to store data that the model was not trained or the model give the correct
      * label to low accuracy point that the correct label does not show in the result list. We have
      * to manually type the correct label and save it ourselves for future training.
      */
-    private EditText customLabelEditText;
+    public EditText customLabelEditText;
 
     /**
      * Variables to keep track of the data that we are currently seeing. I need these to store
      * custom labels that the model does not have or the model evaluates the data wrong (not showing
      * in the result list).
      */
-    private Bitmap currentEvaluatingImage;
+    public Bitmap currentEvaluatingImage;
 
-    private List<List<CanvasPoint2D>> currentEvaluatingWritingStrokes;
+    public List<List<CanvasPoint2D>> currentEvaluatingWritingStrokes;
 
     // I set this to `true` because the text is empty.
-    private boolean isTextSaved = true;
+    public boolean isTextSaved = true;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        canvas = findViewById(R.id.canvas);
-        resultContainer = findViewById(R.id.result_container);
-        resultViewWidth = (int) getResources().getDimension(R.dimen.result_size);
-        textRenderer = findViewById(R.id.text_renderer);
-        customLabelEditText = findViewById(R.id.custom_label);
+        canvas               = findViewById(R.id.canvas);
+        resultContainer      = findViewById(R.id.result_container);
+        resultViewWidth      = (int) getResources().getDimension(R.dimen.result_size);
+        textRenderer         = findViewById(R.id.text_renderer);
+        customLabelEditText  = findViewById(R.id.custom_label);
         resultListScrollView = findViewById(R.id.result_container_scroll_view);
 
         ToggleButton autoEvaluateToggleButton = findViewById(R.id.auto_evaluate);
-        autoEvaluate = autoEvaluateToggleButton.isChecked();
+        autoEvaluate                          = autoEvaluateToggleButton.isChecked();
         autoEvaluateToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
                 autoEvaluate = isChecked;
             }
         });
 
         ToggleButton autoClearToggleButton = findViewById(R.id.auto_clear);
-        autoClear = autoClearToggleButton.isChecked();
+        autoClear                          = autoClearToggleButton.isChecked();
         autoClearToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
                 autoClear = isChecked;
             }
         });
@@ -153,9 +156,12 @@ public class MainActivity extends Activity implements TouchCallback {
         // events, because of that add EventListener may break out canvas functionality.
         canvas.touchCallback = this;
 
-        try {
+        try
+        {
             tflite = new KanjiClassifier(this);
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
         }
 
@@ -169,10 +175,11 @@ public class MainActivity extends Activity implements TouchCallback {
      * Check if the saving data preference is turned on and if we have permission to write to
      * external storage.
      */
-    private boolean canSaveWritingData() {
+    public boolean canSaveWritingData()
+    {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean isAllowSaving = sharedPreferences.getBoolean(getString(R.string.pref_key_save_data), false);
-        boolean permissionGranted = (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+        boolean isAllowSaving               = sharedPreferences.getBoolean(getString(R.string.pref_key_save_data), false);
+        boolean permissionGranted           = (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
         return isAllowSaving && permissionGranted;
     }
 
@@ -183,13 +190,15 @@ public class MainActivity extends Activity implements TouchCallback {
      * @param path the taken file path
      * @return the available file path can be used for renaming this path
      */
-    private String getBackupFilepath(String path) {
-        int counter = 0;
+    public String getBackupFilepath(String path)
+    {
+        int counter           = 0;
         String backupFilepath = path + "_" + counter;
-        File backupFile = new File(path);
-        while (backupFile.exists()) {
+        File backupFile       = new File(path);
+        while (backupFile.exists())
+        {
             backupFilepath = path + "_" + counter;
-            backupFile = new File(backupFilepath);
+            backupFile     = new File(backupFilepath);
             counter++;
         }
         return backupFilepath;
@@ -202,7 +211,8 @@ public class MainActivity extends Activity implements TouchCallback {
      * @param filename the string that may become a file name
      * @return the valid string for a file name
      */
-    private String normalizeFilename(String filename) {
+    public String normalizeFilename(String filename)
+    {
         return filename.replaceAll("[\\\\\\/\\.\\#\\%\\$\\!\\@\\(\\)\\[\\]\\s]+", "_");
     }
 
@@ -216,38 +226,42 @@ public class MainActivity extends Activity implements TouchCallback {
      * @param image          the drawing image of `label`
      * @param writingStrokes list of strokes that create the writing
      */
-    private synchronized void exportWritingData(String label, final float confidence, final long timestamp, Bitmap image, List<List<CanvasPoint2D>> writingStrokes) {
+    public synchronized void exportWritingData(String label, final float confidence, final long timestamp, Bitmap image, List<List<CanvasPoint2D>> writingStrokes)
+    {
         long startTime = SystemClock.elapsedRealtime();
         // TODO create preference for save location
-        try {
+        try
+        {
             // TODO the image format is ARGB, write our own encoder to encode grayscale PNG
             // Android does not support encoding grayscale PNG from Bitmap.
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             image.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream);
             byte[] grayscalePNGImage = byteArrayOutputStream.toByteArray();
-            String base64Image = Base64.encodeToString(grayscalePNGImage, Base64.DEFAULT);
+            String base64Image       = Base64.encodeToString(grayscalePNGImage, Base64.DEFAULT);
             // convert the base64 string to array of string to shorten the line length in json file.
             String[] wrappedBase64String = base64Image.split("\n");
             // System.out.println(wrappedBase64String.length);
 
             File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            String savePath = downloadDirectory.getAbsolutePath() + "/" + SAVE_DIRECTORY_NAME + "/" + WRITING_STROKE_DATA_DIR_NAME;
+            String savePath        = downloadDirectory.getAbsolutePath() + "/" + SAVE_DIRECTORY_NAME + "/" + WRITING_STROKE_DATA_DIR_NAME;
             // normalize path separators
             savePath = savePath.replaceAll("/+", "/");
-            if (!prepareDirectory(savePath)) {
+            if (!prepareDirectory(savePath))
+            {
                 throw new Exception(String.format("Cannot create directory: %s", savePath));
             }
 
             // make directory for the label
-            label = (label == null || label.isEmpty()) ? "NO_LABEL" : label;
+            label               = (label == null || label.isEmpty()) ? "NO_LABEL" : label;
             String labelDirName = normalizeFilename(label);
             String labelDirPath = savePath + "/" + labelDirName;
-            labelDirPath = labelDirPath.replaceAll("/+", "/");
-            if (!prepareDirectory(labelDirPath)) {
+            labelDirPath        = labelDirPath.replaceAll("/+", "/");
+            if (!prepareDirectory(labelDirPath))
+            {
                 throw new Exception(String.format("Cannot create directory: %s", labelDirPath));
             }
 
-            String dataFilePath = labelDirPath + "/" + Long.toString(timestamp) + ".json";
+            String dataFilePath  = labelDirPath + "/" + Long.toString(timestamp) + ".json";
             FileOutputStream out = new FileOutputStream(dataFilePath);
             // serialize to JSON format
             JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, "UTF-8"));
@@ -260,11 +274,13 @@ public class MainActivity extends Activity implements TouchCallback {
             writer.name("touches");
             writer.beginArray();
             Iterator<List<CanvasPoint2D>> iterator = writingStrokes.iterator();
-            while (iterator.hasNext()) {
+            while (iterator.hasNext())
+            {
                 List<CanvasPoint2D> stroke = iterator.next();
                 writer.beginArray();
                 Iterator<CanvasPoint2D> strokeIterator = stroke.iterator();
-                while (strokeIterator.hasNext()) {
+                while (strokeIterator.hasNext())
+                {
                     CanvasPoint2D p = strokeIterator.next();
                     writer.beginObject();
                     writer.name("x").value(p.x);
@@ -280,7 +296,8 @@ public class MainActivity extends Activity implements TouchCallback {
             writer.name("description").value("PNG image in ARGB format even though this is just a grayscale image.");
             writer.name("data");
             writer.beginArray();
-            for (String base64Data : wrappedBase64String) {
+            for (String base64Data : wrappedBase64String)
+            {
                 writer.value(base64Data);
             }
             writer.endArray();
@@ -288,7 +305,9 @@ public class MainActivity extends Activity implements TouchCallback {
 
             writer.endObject();
             writer.close();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             ex.printStackTrace();
         }
         long exportDuration = SystemClock.elapsedRealtime() - startTime;
@@ -302,14 +321,19 @@ public class MainActivity extends Activity implements TouchCallback {
      *
      * @param path the directory path we want
      */
-    private boolean prepareDirectory(String path) {
+    public boolean prepareDirectory(String path)
+    {
         File file = new File(path);
-        if (file.exists()) {
-            if (file.isFile()) {
+        if (file.exists())
+        {
+            if (file.isFile())
+            {
                 String backupFilePath = getBackupFilepath(path);
                 file.renameTo(new File(backupFilePath));
                 file = new File(path);
-            } else {
+            }
+            else
+            {
                 return true;
             }
         }
@@ -317,7 +341,8 @@ public class MainActivity extends Activity implements TouchCallback {
         return file.mkdirs();
     }
 
-    private void pushText(String text) {
+    public void pushText(String text)
+    {
         isTextSaved = false;
         textRenderer.setText(textRenderer.getText() + text);
         textRenderer.setSelection(textRenderer.getText().length());
@@ -335,19 +360,23 @@ public class MainActivity extends Activity implements TouchCallback {
      * @param writingStrokes list of touch points
      * @return
      */
-    private View createButtonFromResult(Recognition r, Bitmap image, List<List<CanvasPoint2D>> writingStrokes) {
-        ResultButton btn = new ResultButton(this, null, r.title, r.confidence);
+    public View createButtonFromResult(Recognition r, Bitmap image, List<List<CanvasPoint2D>> writingStrokes)
+    {
+        ResultButton btn                       = new ResultButton(this, null, r.title, r.confidence);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(resultViewWidth, LinearLayout.LayoutParams.MATCH_PARENT);
         btn.setLayoutParams(layoutParams);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 pushText(r.title);
-                if (canSaveWritingData()) {
+                if (canSaveWritingData())
+                {
                     // save image and writing strokes to files
                     exportWritingData(r.title, r.confidence, r.timestamp, image, writingStrokes);
                 }
-                if (autoClear) {
+                if (autoClear)
+                {
                     clearCanvas(v);
                 }
             }
@@ -361,24 +390,28 @@ public class MainActivity extends Activity implements TouchCallback {
      *
      * @param view the View that triggers this method.
      */
-    public synchronized void runClassifier(View view) {
-        if (canvas == null || tflite == null || resultContainer == null) {
+    public synchronized void runClassifier(View view)
+    {
+        if (canvas == null || tflite == null || resultContainer == null)
+        {
             return;
         }
 
         // long startTime = SystemClock.elapsedRealtime();
-        currentEvaluatingImage = canvas.getImage();
+        currentEvaluatingImage          = canvas.getImage();
         currentEvaluatingWritingStrokes = canvas.getWritingStrokes();
         // System.out.println("Number of strokes: " + currentEvaluatingWritingStrokes.size());
         List<Recognition> results = tflite.recognizeImage(currentEvaluatingImage);
         // long evaluateDuration = SystemClock.elapsedRealtime() - startTime;
         // System.out.println(String.format("Inference took %d ms.", evaluateDuration));
 
-        if (resultContainer.getChildCount() > 0) {
+        if (resultContainer.getChildCount() > 0)
+        {
             resultContainer.removeAllViews();
         }
 
-        for (Recognition result : results) {
+        for (Recognition result : results)
+        {
             resultContainer.addView(createButtonFromResult(result, currentEvaluatingImage, currentEvaluatingWritingStrokes));
         }
 
@@ -386,25 +419,31 @@ public class MainActivity extends Activity implements TouchCallback {
         resultListScrollView.scrollTo(0, 0);
     }
 
-    private void saveWritingHistory(final String text) {
-        if (isTextSaved || text.isEmpty()) {
+    public void saveWritingHistory(final String text)
+    {
+        if (isTextSaved || text.isEmpty())
+        {
             return;
         }
 
-        try {
-            if (!canSaveWritingData()) {
+        try
+        {
+            if (!canSaveWritingData())
+            {
                 return;
             }
 
             File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            String rootSavePath = downloadDirectory.getAbsolutePath() + "/" + SAVE_DIRECTORY_NAME;
-            rootSavePath = rootSavePath.replaceAll("/+", "/");
-            if (!prepareDirectory(rootSavePath)) {
+            String rootSavePath    = downloadDirectory.getAbsolutePath() + "/" + SAVE_DIRECTORY_NAME;
+            rootSavePath           = rootSavePath.replaceAll("/+", "/");
+            if (!prepareDirectory(rootSavePath))
+            {
                 throw new Exception(String.format("Cannot create directory: %s", rootSavePath));
             }
 
             String writingHistoryDirectoryPath = rootSavePath + "/" + WRITING_LOG_DIR_NAME;
-            if (!prepareDirectory(writingHistoryDirectoryPath)) {
+            if (!prepareDirectory(writingHistoryDirectoryPath))
+            {
                 throw new Exception(String.format("Cannot create directory: %s", writingHistoryDirectoryPath));
             }
 
@@ -412,15 +451,20 @@ public class MainActivity extends Activity implements TouchCallback {
             String saveFilePath;
             File saveFile;
 
-            do {
+            do
+            {
                 saveFilePath = writingHistoryDirectoryPath + String.format("%06d.txt", indexCounter);
                 saveFilePath = saveFilePath.replace("/+", "/");
-                saveFile = new File(saveFilePath);
+                saveFile     = new File(saveFilePath);
 
-                if (!saveFile.exists()) {
+                if (!saveFile.exists())
+                {
                     saveFile.createNewFile();
-                } else {
-                    if (saveFile.isDirectory()) {
+                }
+                else
+                {
+                    if (saveFile.isDirectory())
+                    {
                         // backup this directory to take over the file name
                         String backupPath = getBackupFilepath(saveFilePath);
                         saveFile.renameTo(new File(backupPath));
@@ -438,7 +482,9 @@ public class MainActivity extends Activity implements TouchCallback {
             osw.flush();
             osw.close();
             isTextSaved = true;
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             ex.printStackTrace();
         }
     }
@@ -448,17 +494,20 @@ public class MainActivity extends Activity implements TouchCallback {
      *
      * @param view the View that triggers this method.
      */
-    public void copyTextToClipboard(View view) {
-        if (textRenderer.getText().length() > 0) {
+    public void copyTextToClipboard(View view)
+    {
+        if (textRenderer.getText().length() > 0)
+        {
             ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clipData = ClipData.newPlainText("text copied from handwriting input", textRenderer.getText());
+            ClipData clipData          = ClipData.newPlainText("text copied from handwriting input", textRenderer.getText());
             clipboard.setPrimaryClip(clipData);
         }
         saveWritingHistory(textRenderer.getText().toString());
     }
 
     /** Clear text showing in the UI. */
-    public void clearText(View view) {
+    public void clearText(View view)
+    {
         saveWritingHistory(textRenderer.getText().toString());
         textRenderer.setText("");
     }
@@ -468,10 +517,13 @@ public class MainActivity extends Activity implements TouchCallback {
      * listener to the drawing canvas, it will override the drawing logic.
      */
     @Override
-    public void onTouchEnd() {
-        if (autoEvaluate) {
+    public void onTouchEnd()
+    {
+        if (autoEvaluate)
+        {
             long ts = SystemClock.elapsedRealtime();
-            synchronized (InferenceThread.LastCreatedThreadTimeLock) {
+            synchronized (InferenceThread.LastCreatedThreadTimeLock)
+            {
                 InferenceThread.LastCreatedThreadTime = ts;
             }
 
@@ -485,37 +537,45 @@ public class MainActivity extends Activity implements TouchCallback {
      *
      * @param view the view that triggers this method
      */
-    public void openSettings(View view) {
+    public void openSettings(View view)
+    {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
-    public void clearCustomLabelText(View view) {
+    public void clearCustomLabelText(View view)
+    {
         customLabelEditText.setText("");
     }
 
-    public void clearCanvas(View view) {
+    public void clearCanvas(View view)
+    {
         canvas.clearCanvas();
-        currentEvaluatingImage = null;
+        currentEvaluatingImage          = null;
         currentEvaluatingWritingStrokes = null;
-        if (resultContainer.getChildCount() > 0) {
+        if (resultContainer.getChildCount() > 0)
+        {
             resultContainer.removeAllViews();
         }
     }
 
-    public void saveWritingDataWithCustomLabel(View view) {
+    public void saveWritingDataWithCustomLabel(View view)
+    {
         String customLabel = customLabelEditText.getText().toString();
-        if (currentEvaluatingImage != null && currentEvaluatingWritingStrokes != null && !customLabel.isEmpty()) {
+        if (currentEvaluatingImage != null && currentEvaluatingWritingStrokes != null && !customLabel.isEmpty())
+        {
             pushText(customLabel);
 
-            if (canSaveWritingData()) {
+            if (canSaveWritingData())
+            {
                 exportWritingData(customLabel, 1f, System.currentTimeMillis(), currentEvaluatingImage, currentEvaluatingWritingStrokes);
             }
 
             // After saving the data with custom label, I want to clear the current canvas, clear
             // the text from custom label input and hide my soft input keyboard. That is a lot of
             // activities to continue writing after saving custom label.
-            if (autoClear) {
+            if (autoClear)
+            {
                 // clear the canvas
                 clearCanvas(view);
                 // clear the label text
@@ -532,13 +592,16 @@ public class MainActivity extends Activity implements TouchCallback {
         }
     }
 
-    public void lookUpMeaningWithJishoDotOrg(View view) {
+    public void lookUpMeaningWithJishoDotOrg(View view)
+    {
         String japaneseText = this.textRenderer.getText().toString();
         System.out.println("Text to be looked up: " + japaneseText);
-        if (!japaneseText.isEmpty()) {
+        if (!japaneseText.isEmpty())
+        {
             saveWritingHistory(japaneseText);
 
-            try {
+            try
+            {
                 String encodedText = URLEncoder.encode(japaneseText, "utf-8");
                 System.out.println("Encoded text: " + encodedText);
 
@@ -546,7 +609,9 @@ public class MainActivity extends Activity implements TouchCallback {
                 builder.setColorScheme(CustomTabsIntent.COLOR_SCHEME_DARK);
                 CustomTabsIntent customTabsIntent = builder.build();
                 customTabsIntent.launchUrl(this, Uri.parse("https://jisho.org/search/" + encodedText));
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 ex.printStackTrace();
             }
         }
