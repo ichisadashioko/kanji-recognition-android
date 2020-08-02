@@ -15,8 +15,11 @@ jobs:
       with:
         java-version: 1.8
 
+    - name: Locate Gradle
+      run: which gradle
+
     - name: Setup Gradle
-      run: bash ./gradlew
+      run: gradle wrapper
 
     - name: Build project
       run: bash ./gradlew build
