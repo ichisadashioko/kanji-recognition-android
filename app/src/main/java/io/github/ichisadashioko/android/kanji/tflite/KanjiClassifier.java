@@ -1,6 +1,8 @@
 package io.github.ichisadashioko.android.kanji.tflite;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -8,10 +10,11 @@ import android.util.Log;
 import org.tensorflow.lite.Interpreter;
 
 import java.io.*;
+import java.nio.channels.FileChannel;
+import java.nio.MappedByteBuffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class KanjiClassifier
@@ -29,10 +32,9 @@ public class KanjiClassifier
 
     // pre-allocated buffers to store image data
     public int[] intValues = new int[IMAGE_WIDTH * IMAGE_HEIGHT];
-    public final int NUM_LABELS;
     public Interpreter.Options tfliteOptions;
     public MappedByteBuffer tfliteModel;
-    public List<String> labels;
+    public String[] labels;
     public Interpreter tflite;
     public ByteBuffer imgData;
     public float[][] labelProbArray;
@@ -45,12 +47,11 @@ public class KanjiClassifier
         tfliteOptions.setUseNNAPI(true);
         tflite = new Interpreter(tfliteModel, tfliteOptions);
 
-        labels     = loadLabelList(activity);
-        NUM_LABELS = labels.size();
+        labels = loadLabelList(activity);
 
         imgData = ByteBuffer.allocateDirect(DIM_BATCH_SIZE * IMAGE_HEIGHT * IMAGE_WIDTH * DIM_PIXEL_SIZE * NUM_BYTES_PER_PIXEL);
         imgData.order(ByteOrder.nativeOrder());
-        labelProbArray = new float[DIM_BATCH_SIZE][NUM_LABELS];
+        labelProbArray = new float[DIM_BATCH_SIZE][labels.length];
 
         Log.d(LOG_TAG, "Created Kanji Classifier.");
     }
@@ -63,17 +64,66 @@ public class KanjiClassifier
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, afd.getStartOffset(), afd.getDeclaredLength());
     }
 
-    public List<String> loadLabelList(Activity activity) throws IOException
+    public static byte[] ReadAssetData(Context androidContext, String assetRelativePath) throws IOException
     {
-        ArrayList<String> labels = new ArrayList<>();
-        BufferedReader reader    = new BufferedReader(new InputStreamReader(activity.getAssets().open(LABEL_FILE_PATH)));
-        String line              = reader.readLine();
-        while (line != null)
+        AssetManager am        = androidContext.getAssets();
+        InputStream is         = am.open(assetRelativePath);
+        ArrayList<Byte> buffer = new ArrayList<Byte>();
+
+        int tmpByte;
+        while (true)
         {
-            labels.add(line);
-            line = reader.readLine();
+            tmpByte = is.read();
+            if (tmpByte > -1)
+            {
+                buffer.add((byte) tmpByte);
+            }
+            else
+            {
+                break;
+            }
         }
-        return labels;
+
+        byte[] fileData = new byte[buffer.size()];
+        for (int i = 0; i < buffer.size(); i++)
+        {
+            fileData[i] = buffer.get(i);
+        }
+
+        is.close();
+        am.close();
+
+        return fileData;
+    }
+
+    public static String[] FilterEmptyLines(String[] lines)
+    {
+        ArrayList<String> buffer = new ArrayList<String>();
+
+        for (int i = 0; i < lines.length; i++)
+        {
+            if (lines[i].length() == 0)
+            {
+                continue;
+            }
+            else
+            {
+                buffer.add(lines[i]);
+            }
+        }
+
+        return buffer.toArray(new String[buffer.size()]);
+    }
+
+    public String[] loadLabelList(Activity activity) throws IOException
+    {
+        byte[] fileData    = ReadAssetData(activity, LABEL_FILE_PATH);
+        String fileContent = new String(fileData, StandardCharsets.UTF_8);
+
+        String[] textLines = fileContent.split("\n");
+        textLines          = FilterEmptyLines(textLines);
+
+        return textLines;
     }
 
     public float normalizePixelValue(int pixelValue)
@@ -125,7 +175,7 @@ public class KanjiClassifier
         long timestamp = System.currentTimeMillis();
 
         // sort the result by confidence
-        PriorityQueue<Recognition> pq = new PriorityQueue<>(NUM_LABELS, new Comparator<Recognition>() {
+        PriorityQueue<Recognition> pq = new PriorityQueue<>(labels.length, new Comparator<Recognition>() {
             @Override
             public int compare(Recognition a, Recognition b)
             {
@@ -134,9 +184,12 @@ public class KanjiClassifier
             }
         });
 
-        for (int i = 0; i < NUM_LABELS; i++)
+        for (int i = 0; i < labels.length; i++)
         {
-            pq.add(new Recognition(i, timestamp, labels.get(i), labelProbArray[0][i]));
+            for (int j = 0; j < labels[i].length(); j++)
+            {
+                pq.add(new Recognition(i, timestamp, labels[i].substring(j, j + 1), labelProbArray[0][i]));
+            }
         }
 
         int returnSize = Math.min(pq.size(), MAX_RESULTS);
