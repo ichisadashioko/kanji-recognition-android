@@ -13,6 +13,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Process;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Base64;
@@ -25,16 +26,6 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.core.content.ContextCompat;
-
-import io.github.ichisadashioko.android.kanji.tflite.KanjiClassifier;
-import io.github.ichisadashioko.android.kanji.tflite.Recognition;
-import io.github.ichisadashioko.android.kanji.views.CanvasPoint2D;
-import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
-import io.github.ichisadashioko.android.kanji.views.ResultButton;
-import io.github.ichisadashioko.android.kanji.views.TouchCallback;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,6 +34,13 @@ import java.io.OutputStreamWriter;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
+
+import io.github.ichisadashioko.android.kanji.tflite.KanjiClassifier;
+import io.github.ichisadashioko.android.kanji.tflite.Recognition;
+import io.github.ichisadashioko.android.kanji.views.CanvasPoint2D;
+import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
+import io.github.ichisadashioko.android.kanji.views.ResultButton;
+import io.github.ichisadashioko.android.kanji.views.TouchCallback;
 
 public class MainActivity extends Activity implements TouchCallback
 {
@@ -124,14 +122,14 @@ public class MainActivity extends Activity implements TouchCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        canvas               = findViewById(R.id.canvas);
-        resultContainer      = findViewById(R.id.result_container);
+        canvas               = (HandwritingCanvas) findViewById(R.id.canvas);
+        resultContainer      = (LinearLayout) findViewById(R.id.result_container);
         resultViewWidth      = (int) getResources().getDimension(R.dimen.result_size);
-        textRenderer         = findViewById(R.id.text_renderer);
-        customLabelEditText  = findViewById(R.id.custom_label);
-        resultListScrollView = findViewById(R.id.result_container_scroll_view);
+        textRenderer         = (EditText) findViewById(R.id.text_renderer);
+        customLabelEditText  = (EditText) findViewById(R.id.custom_label);
+        resultListScrollView = (HorizontalScrollView) findViewById(R.id.result_container_scroll_view);
 
-        ToggleButton autoEvaluateToggleButton = findViewById(R.id.auto_evaluate);
+        ToggleButton autoEvaluateToggleButton = (ToggleButton) findViewById(R.id.auto_evaluate);
         autoEvaluate                          = autoEvaluateToggleButton.isChecked();
         autoEvaluateToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -141,7 +139,7 @@ public class MainActivity extends Activity implements TouchCallback
             }
         });
 
-        ToggleButton autoClearToggleButton = findViewById(R.id.auto_clear);
+        ToggleButton autoClearToggleButton = (ToggleButton) findViewById(R.id.auto_clear);
         autoClear                          = autoClearToggleButton.isChecked();
         autoClearToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -179,7 +177,7 @@ public class MainActivity extends Activity implements TouchCallback
     {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isAllowSaving               = sharedPreferences.getBoolean(getString(R.string.pref_key_save_data), false);
-        boolean permissionGranted           = (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+        boolean permissionGranted           = (this.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, Process.myPid(), Process.myUid()) != PackageManager.PERMISSION_GRANTED);
         return isAllowSaving && permissionGranted;
     }
 
@@ -360,7 +358,7 @@ public class MainActivity extends Activity implements TouchCallback
      * @param writingStrokes list of touch points
      * @return
      */
-    public View createButtonFromResult(Recognition r, Bitmap image, List<List<CanvasPoint2D>> writingStrokes)
+    public View createButtonFromResult(final Recognition r, final Bitmap image, final List<List<CanvasPoint2D>> writingStrokes)
     {
         ResultButton btn                       = new ResultButton(this, null, r.title, r.confidence);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(resultViewWidth, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -582,8 +580,7 @@ public class MainActivity extends Activity implements TouchCallback
                 clearCanvas(view);
                 // clear the label text
                 customLabelEditText.setText("");
-                // minimize the virtual input keyboard. Wow, this task seems pretty hard and
-                // controversial.
+                // minimize the virtual input keyboard. Wow, this task seems pretty hard and controversial.
                 // https://stackoverflow.com/a/17789187/83644034
                 InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
                 // I know that the view I want to hide the soft keyboard so this really help me save

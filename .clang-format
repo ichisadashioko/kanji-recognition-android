@@ -2,5 +2,4 @@ BasedOnStyle: Chromium
 ColumnLimit: 512
 AlignConsecutiveAssignments: true
 AlignConsecutiveMacros: true
-SortIncludes: false
 BreakBeforeBraces: Allman

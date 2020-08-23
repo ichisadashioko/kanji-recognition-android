@@ -1,11 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 19
     defaultConfig {
         applicationId "io.github.ichisadashioko.android.kanji"
         minSdkVersion 19
-        targetSdkVersion 28
+        //noinspection ExpiredTargetSdkVersion
+        targetSdkVersion 19
         versionCode 1
         versionName "1.0"
         ndk {}
@@ -20,17 +21,11 @@ android {
     }
     compileOptions {
         sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        targetCompatibility = 1.6
     }
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.preference:preference:1.1.0'
-    implementation 'androidx.browser:browser:1.2.0'
-
     // TensorFlow Lite library
     implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly'
     implementation 'org.tensorflow:tensorflow-lite-gpu:0.0.0-nightly'

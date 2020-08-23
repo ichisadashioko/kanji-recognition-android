@@ -2,20 +2,25 @@ package io.github.ichisadashioko.android.kanji.tflite;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.tensorflow.lite.Interpreter;
 
-import java.io.*;
-import java.nio.channels.FileChannel;
-import java.nio.MappedByteBuffer;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
 
 public class KanjiClassifier
 {
@@ -158,7 +163,7 @@ public class KanjiClassifier
 
     public synchronized List<Recognition> recognizeImage(Bitmap bitmap)
     {
-        ArrayList<Recognition> results = new ArrayList<>();
+        ArrayList<Recognition> results = new ArrayList<Recognition>();
 
         try
         {
@@ -175,7 +180,7 @@ public class KanjiClassifier
         long timestamp = System.currentTimeMillis();
 
         // sort the result by confidence
-        PriorityQueue<Recognition> pq = new PriorityQueue<>(labels.length, new Comparator<Recognition>() {
+        PriorityQueue<Recognition> pq = new PriorityQueue<Recognition>(labels.length, new Comparator<Recognition>() {
             @Override
             public int compare(Recognition a, Recognition b)
             {
