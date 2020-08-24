@@ -17,7 +17,14 @@ class SVGDrawingMoveToCommand extends SVGDrawingCommand
     public float y;
 }
 
-class SVGDrawingCurveToCommand
+class SVGDrawingLineToCommand extends SVGDrawingCommand
+{
+    public boolean isRelative;
+    public float x;
+    public float y;
+}
+
+class SVGDrawingCurveToCommand extends SVGDrawingCommand
 {
     public boolean isRelative;
     public float x1;
@@ -28,7 +35,7 @@ class SVGDrawingCurveToCommand
     public float y;
 }
 
-class SVGDrawingSmoothCurveToCommand
+class SVGDrawingSmoothCurveToCommand extends SVGDrawingCommand
 {
     public boolean isRelative;
     public float x2;
@@ -166,13 +173,14 @@ public class SVGPathView extends View
             throw new ParseException();
         }
 
-        String s = "";
+        StringBuilder sb = new StringBuilder();
 
         for (int i = startPos; i < curPos; i++)
         {
-            s += d[i];
+            sb.append(d[i]);
         }
 
+        String s                 = sb.toString();
         float number             = Float.parseFloat(s);
         ParseNumberRetval retval = new ParseNumberRetval();
         retval.number            = number;
@@ -181,7 +189,7 @@ public class SVGPathView extends View
         return retval;
     }
 
-    public static ParseCommandRetval<SVGDrawingMoveToCommand> ParseRelativeMoveTo(char[] d, int curPos) throws ParseException
+    public static ParseCommandRetval<SVGDrawingMoveToCommand> ParseMoveToParams(char[] d, int curPos, boolean isRelative) throws ParseException
     {
         ParseNumberRetval parseNumberRetval = null;
 
@@ -195,7 +203,7 @@ public class SVGPathView extends View
 
         SVGDrawingMoveToCommand command = new SVGDrawingMoveToCommand();
 
-        command.isRelative = true;
+        command.isRelative = isRelative;
         command.x          = x;
         command.y          = y;
 
@@ -207,10 +215,105 @@ public class SVGPathView extends View
         return retval;
     }
 
+    public static ParseCommandRetval<SVGDrawingLineToCommand> ParseLineToParams(char[] d, int curPos, boolean isRelative) throws ParseException
+    {
+        ParseNumberRetval parseNumberRetval = null;
+
+        ParseCommandRetval<SVGDrawingLineToCommand> retval = new ParseCommandRetval<>();
+
+        retval.command = new SVGDrawingLineToCommand();
+
+        retval.command.isRelative = isRelative;
+
+        parseNumberRetval = ParseNumber(d, curPos);
+        curPos            = parseNumberRetval.curPos;
+        retval.command.x  = parseNumberRetval.number;
+
+        parseNumberRetval = ParseNumber(d, curPos);
+        curPos            = parseNumberRetval.curPos;
+        retval.command.y  = parseNumberRetval.number;
+
+        retval.curPos = curPos;
+
+        return retval;
+    }
+
+    public static ParseCommandRetval<SVGDrawingCurveToCommand> ParseCurveToParams(char[] d, int curPos, boolean isRelative) throws ParseException
+    {
+        ParseNumberRetval parseNumberRetval = null;
+
+        ParseCommandRetval<SVGDrawingCurveToCommand> retval = new ParseCommandRetval<>();
+
+        retval.command = new SVGDrawingCurveToCommand();
+
+        retval.command.isRelative = isRelative;
+
+        parseNumberRetval = ParseNumber(d, curPos);
+        curPos            = parseNumberRetval.curPos;
+        retval.command.x1 = parseNumberRetval.number;
+
+        parseNumberRetval = ParseNumber(d, curPos);
+        curPos            = parseNumberRetval.curPos;
+        retval.command.y1 = parseNumberRetval.number;
+
+        parseNumberRetval = ParseNumber(d, curPos);
+        curPos            = parseNumberRetval.curPos;
+        retval.command.x2 = parseNumberRetval.number;
+
+        parseNumberRetval = ParseNumber(d, curPos);
+        curPos            = parseNumberRetval.curPos;
+        retval.command.y2 = parseNumberRetval.number;
+
+        parseNumberRetval = ParseNumber(d, curPos);
+        curPos            = parseNumberRetval.curPos;
+        retval.command.x  = parseNumberRetval.number;
+
+        parseNumberRetval = ParseNumber(d, curPos);
+        curPos            = parseNumberRetval.curPos;
+        retval.command.y  = parseNumberRetval.number;
+
+        retval.curPos = curPos;
+
+        return retval;
+    }
+
+    public static ParseCommandRetval<SVGDrawingSmoothCurveToCommand> ParseSmoothCurveToParams(char[] d, int curPos, boolean isRelative) throws ParseException
+    {
+        ParseNumberRetval parseNumberRetval = null;
+
+        ParseCommandRetval<SVGDrawingSmoothCurveToCommand> retval = new ParseCommandRetval<>();
+
+        retval.command = new SVGDrawingSmoothCurveToCommand();
+
+        retval.command.isRelative = isRelative;
+
+        parseNumberRetval = ParseNumber(d, curPos);
+        curPos            = parseNumberRetval.curPos;
+        retval.command.x2 = parseNumberRetval.number;
+
+        parseNumberRetval = ParseNumber(d, curPos);
+        curPos            = parseNumberRetval.curPos;
+        retval.command.y2 = parseNumberRetval.number;
+
+        parseNumberRetval = ParseNumber(d, curPos);
+        curPos            = parseNumberRetval.curPos;
+        retval.command.x  = parseNumberRetval.number;
+
+        parseNumberRetval = ParseNumber(d, curPos);
+        curPos            = parseNumberRetval.curPos;
+        retval.command.y  = parseNumberRetval.number;
+
+        retval.curPos = curPos;
+
+        return retval;
+    }
+
     public static void ParseSVGPathData(char[] d) throws ParseException
     {
-        int curPos                                   = 0;
-        SVGDrawingCommand lastCommand                = null;
+        int curPos                            = 0;
+        SVGDrawingCommand lastCommand         = null;
+        ParseCommandRetval parseCommandRetval = null;
+
         ArrayList<SVGDrawingCommand> drawingCommands = new ArrayList<SVGDrawingCommand>();
 
         while (curPos < d.length)
@@ -222,6 +325,126 @@ public class SVGPathView extends View
             {
                 // relative `moveto` command
                 curPos++;
+                if (!(curPos < d.length))
+                {
+                    // TODO
+                    throw new ParseException();
+                }
+
+                parseCommandRetval = ParseMoveToParams(d, curPos, true);
+                curPos             = parseCommandRetval.curPos;
+                lastCommand        = parseCommandRetval.command;
+                drawingCommands.add(lastCommand);
+            }
+            else if (d[curPos] == 'M')
+            {
+                // absolute `moveto` command
+                curPos++;
+                if (!(curPos < d.length))
+                {
+                    // TODO
+                    throw new ParseException();
+                }
+
+                parseCommandRetval = ParseMoveToParams(d, curPos, false);
+                curPos             = parseCommandRetval.curPos;
+                lastCommand        = parseCommandRetval.command;
+                drawingCommands.add(lastCommand);
+            }
+            else if (d[curPos] == 'l')
+            {
+                // relative `lineto` command
+                curPos++;
+                if (!(curPos < d.length))
+                {
+                    // TODO
+                    throw new ParseException();
+                }
+
+                parseCommandRetval = ParseLineToParams(d, curPos, true);
+                curPos             = parseCommandRetval.curPos;
+                lastCommand        = parseCommandRetval.command;
+                drawingCommands.add(lastCommand);
+            }
+            else if (d[curPos] == 'L')
+            {
+                // absolute `lineto` command
+                curPos++;
+                if (!(curPos < d.length))
+                {
+                    // TODO
+                    throw new ParseException();
+                }
+
+                parseCommandRetval = ParseLineToParams(d, curPos, false);
+                curPos             = parseCommandRetval.curPos;
+                lastCommand        = parseCommandRetval.command;
+                drawingCommands.add(lastCommand);
+            }
+            else if (d[curPos] == 'c')
+            {
+                // relative `curveto` command
+                curPos++;
+                if (!(curPos < d.length))
+                {
+                    // TODO
+                    throw new ParseException();
+                }
+
+                parseCommandRetval = ParseCurveToParams(d, curPos, true);
+                curPos             = parseCommandRetval.curPos;
+                lastCommand        = parseCommandRetval.command;
+                drawingCommands.add(lastCommand);
+            }
+            else if (d[curPos] == 'C')
+            {
+                // absolute `curveto` command
+                curPos++;
+                if (!(curPos < d.length))
+                {
+                    // TODO
+                    throw new ParseException();
+                }
+
+                parseCommandRetval = ParseCurveToParams(d, curPos, false);
+                curPos             = parseCommandRetval.curPos;
+                lastCommand        = parseCommandRetval.command;
+                drawingCommands.add(lastCommand);
+            }
+            else if (d[curPos] == 's')
+            {
+                // relative `smoothcurveto` command
+                curPos++;
+                if (!(curPos < d.length))
+                {
+                    // TODO
+                    throw new ParseException();
+                }
+
+                parseCommandRetval = ParseSmoothCurveToParams(d, curPos, true);
+                curPos             = parseCommandRetval.curPos;
+                lastCommand        = parseCommandRetval.command;
+                drawingCommands.add(lastCommand);
+            }
+            else if (d[curPos] == 'S')
+            {
+                // absolute `smoothcurveto` command
+                curPos++;
+                if (!(curPos < d.length))
+                {
+                    // TODO
+                    throw new ParseException();
+                }
+
+                parseCommandRetval = ParseSmoothCurveToParams(d, curPos, false);
+                curPos             = parseCommandRetval.curPos;
+                lastCommand        = parseCommandRetval.command;
+                drawingCommands.add(lastCommand);
+            }
+            else
+            {
+                // TODO
+                throw new ParseException();
             }
         }
     }
