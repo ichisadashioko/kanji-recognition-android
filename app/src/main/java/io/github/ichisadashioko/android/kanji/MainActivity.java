@@ -26,6 +26,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ToggleButton;
 
+import androidx.browser.customtabs.CustomTabsIntent;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;

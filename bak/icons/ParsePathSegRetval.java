@@ -1,7 +1,6 @@
 package io.github.ichisadashioko.android.kanji.views.icons;
 
-class ParseCommandRetval<T extends SVGDrawingCommand>
-{
+public class ParsePathSegRetval {
     public int curPos;
-    public T command;
+    public SVGPathSeg segment;
 }
