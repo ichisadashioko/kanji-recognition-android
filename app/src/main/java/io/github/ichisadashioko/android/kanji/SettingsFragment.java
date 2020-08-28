@@ -1,5 +1,7 @@
 package io.github.ichisadashioko.android.kanji;
 
+import static io.github.ichisadashioko.android.kanji.SettingsActivity.PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE_CODE;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -11,8 +13,6 @@ import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreferenceCompat;
-
-import static io.github.ichisadashioko.android.kanji.SettingsActivity.PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE_CODE;
 
 public class SettingsFragment extends PreferenceFragmentCompat
 {

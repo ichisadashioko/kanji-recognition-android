@@ -28,13 +28,6 @@ import android.widget.ToggleButton;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 
-import io.github.ichisadashioko.android.kanji.tflite.KanjiClassifier;
-import io.github.ichisadashioko.android.kanji.tflite.Recognition;
-import io.github.ichisadashioko.android.kanji.views.CanvasPoint2D;
-import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
-import io.github.ichisadashioko.android.kanji.views.ResultButton;
-import io.github.ichisadashioko.android.kanji.views.TouchCallback;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,6 +36,13 @@ import java.io.OutputStreamWriter;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
+
+import io.github.ichisadashioko.android.kanji.tflite.KanjiClassifier;
+import io.github.ichisadashioko.android.kanji.tflite.Recognition;
+import io.github.ichisadashioko.android.kanji.views.CanvasPoint2D;
+import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
+import io.github.ichisadashioko.android.kanji.views.ResultButton;
+import io.github.ichisadashioko.android.kanji.views.TouchCallback;
 
 public class MainActivity extends Activity implements TouchCallback
 {
