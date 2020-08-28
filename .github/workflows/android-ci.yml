@@ -15,21 +15,14 @@ jobs:
       with:
         java-version: 1.8
 
-    - name: Locate Gradle
-      run: which gradle
-
     - name: Setup Gradle
       run: gradle wrapper
 
     - name: Build project
-      run: bash ./gradlew
+      run: bash ./gralew
 
     - name: Install tree
       run: sudo apt install -y tree
 
     - name: Show directory structure
       run: tree .
-
-    - uses: actions/upload-artifact@v2
-      with:
-        path: .
