@@ -136,7 +136,12 @@ public class KanjiClassifier
 
         for (int i = 0; i < NUM_LABELS; i++)
         {
-            pq.add(new Recognition(i, timestamp, labels.get(i), labelProbArray[0][i]));
+            String labelStr = labels.get(i);
+            for (int j = 0; j < labelStr.length(); j++)
+            {
+                String labelChar = labelStr.substring(j, j + 1);
+                pq.add(new Recognition(i, timestamp, labelChar, labelProbArray[0][i]));
+            }
         }
 
         int returnSize = Math.min(pq.size(), MAX_RESULTS);
