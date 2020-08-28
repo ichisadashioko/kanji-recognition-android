@@ -505,9 +505,7 @@ public class MainActivity extends Activity implements TouchCallback
         saveWritingHistory(textRenderer.getText().toString());
     }
 
-    /**
-     * Clear text showing in the UI.
-     */
+    /** Clear text showing in the UI. */
     public void clearText(View view)
     {
         saveWritingHistory(textRenderer.getText().toString());
@@ -596,21 +594,11 @@ public class MainActivity extends Activity implements TouchCallback
     public void lookUpMeaningWithJishoDotOrg(View view)
     {
         String japaneseText = this.textRenderer.getText().toString();
+        System.out.println("Text to be looked up: " + japaneseText);
         if (!japaneseText.isEmpty())
         {
             saveWritingHistory(japaneseText);
 
-            int selectionStart = this.textRenderer.getSelectionStart();
-            int selectionEnd   = this.textRenderer.getSelectionEnd();
-
-            System.out.println("selectionStart: " + selectionStart);
-            System.out.println("selectionEnd: " + selectionEnd);
-            if ((selectionEnd - selectionStart) > 0)
-            {
-                japaneseText = japaneseText.substring(selectionStart, selectionEnd);
-            }
-
-            System.out.println("Text to be looked up: " + japaneseText);
             try
             {
                 String encodedText = URLEncoder.encode(japaneseText, "utf-8");
