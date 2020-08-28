@@ -453,7 +453,7 @@ public class MainActivity extends Activity implements TouchCallback
 
             do
             {
-                saveFilePath = writingHistoryDirectoryPath + "/" + String.format("%06d.txt", indexCounter);
+                saveFilePath = writingHistoryDirectoryPath + String.format("%06d.txt", indexCounter);
                 saveFilePath = saveFilePath.replace("/+", "/");
                 saveFile     = new File(saveFilePath);
 
