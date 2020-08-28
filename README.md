@@ -69,7 +69,7 @@ After you add `tensorflow-lite` to project's dependencies and sync Gradle, you s
 
 The `Keras model` equivalent in `TFLite` is an `Interpreter`.
 
-To create and `Interpreter` you will need the `TFLite` model (in form of `MappedByteBuffer`) and the `Interpreter.Options` object.
+To create and `Interpreter` you will need the `TFLite` model (`MappedByteBuffer`) and a `Interpreter.Options` object.
 
 In order to run inference (or `model.predict` in Keras) you will need to pre-allocated a `ByteBuffer` for the input and a `float[]` (depend on your model) for the output. The input `ByteBuffer` will need to be fill with your data before calling `Interpreter.run(input, output)`.
 
