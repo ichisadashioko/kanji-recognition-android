@@ -15,6 +15,21 @@ jobs:
       with:
         java-version: 1.8
 
+    - name: install linux tools
+      run: sudo apt install -y tree wget unzip python3
+
+    - name: download android ndk 20
+      run: wget https://dl.google.com/android/repository/android-ndk-r20b-linux-x86_64.zip
+
+    - name: unzip ndk
+      run: unzip android-ndk-r20b-linux-x86_64.zip
+
+    - name: setup ndk.dir for gradle
+      run: python3 setup_ndk_linux.py
+
+    - name: show directory structure
+      run: tree .
+
     - name: Locate Gradle
       run: which gradle
 
@@ -24,12 +39,6 @@ jobs:
     - name: Build project
       run: bash ./gradlew build
 
-    - name: Install tree
-      run: sudo apt install -y tree
-
-    - name: Show directory structure
-      run: tree .
-
     - uses: actions/upload-artifact@v2
       with:
-        path: .
+        path: app/build/outputs/apk/debug/app-debug.apk
