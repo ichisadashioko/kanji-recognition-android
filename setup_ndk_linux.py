@@ -3,7 +3,7 @@
 import os
 
 if __name__ == '__main__':
-    ndk_filepath = 'android-ndk-r20b-linux-x86_64'
+    ndk_filepath = 'android-ndk-r20b'
     if not os.path.exists(ndk_filepath):
         raise Exception(ndk_filepath + ' does not exist!')
 
