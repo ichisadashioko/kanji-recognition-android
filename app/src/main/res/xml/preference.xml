@@ -4,4 +4,8 @@
         app:icon="@drawable/ic_save"
         app:key="@string/pref_key_save_data"
         app:title="Save writing data" />
+
+    <SwitchPreferenceCompat
+        app:key="@string/pref_key_auto_evaluate_input"
+        app:title="Enable auto evaluate input" />
 </PreferenceScreen>

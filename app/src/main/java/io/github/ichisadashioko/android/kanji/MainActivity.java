@@ -44,7 +44,7 @@ import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
 import io.github.ichisadashioko.android.kanji.views.ResultButton;
 import io.github.ichisadashioko.android.kanji.views.TouchCallback;
 
-public class MainActivity extends Activity implements TouchCallback
+public class MainActivity extends Activity implements TouchCallback, SharedPreferences.OnSharedPreferenceChangeListener
 {
     /**
      * We still have to put custom font in `assets` folder but not the `res` folder because
@@ -131,16 +131,6 @@ public class MainActivity extends Activity implements TouchCallback
         customLabelEditText  = findViewById(R.id.custom_label);
         resultListScrollView = findViewById(R.id.result_container_scroll_view);
 
-        ToggleButton autoEvaluateToggleButton = findViewById(R.id.auto_evaluate);
-        autoEvaluate                          = autoEvaluateToggleButton.isChecked();
-        autoEvaluateToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-            {
-                autoEvaluate = isChecked;
-            }
-        });
-
         ToggleButton autoClearToggleButton = findViewById(R.id.auto_clear);
         autoClear                          = autoClearToggleButton.isChecked();
         autoClearToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -169,6 +159,10 @@ public class MainActivity extends Activity implements TouchCallback
         Typeface kanjiTypeface = Typeface.createFromAsset(getApplicationContext().getAssets(), KANJI_FONT_PATH);
         textRenderer.setTypeface(kanjiTypeface);
         ResultButton.LABEL_FONT = kanjiTypeface;
+
+        autoEvaluate = isAutoEvaluateEnabled();
+
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
 
     /**
@@ -181,6 +175,12 @@ public class MainActivity extends Activity implements TouchCallback
         boolean isAllowSaving               = sharedPreferences.getBoolean(getString(R.string.pref_key_save_data), false);
         boolean permissionGranted           = (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
         return isAllowSaving && permissionGranted;
+    }
+
+    public boolean isAutoEvaluateEnabled()
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getBoolean(getString(R.string.pref_key_auto_evaluate_input), false);
     }
 
     /**
@@ -626,6 +626,15 @@ public class MainActivity extends Activity implements TouchCallback
             {
                 ex.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
+    {
+        if (key.equals(getString(R.string.pref_key_auto_evaluate_input)))
+        {
+            this.autoEvaluate = sharedPreferences.getBoolean(key, false);
         }
     }
 }
