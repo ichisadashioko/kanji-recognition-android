@@ -60,10 +60,10 @@ public class SettingsActivity extends AppCompatActivity implements ActivityCompa
 
                 reload();
 
-                return;
+                break;
             }
 
-                // other 'case' lines to check for other  permissions this app might request.
+                // other 'case' lines to check for other permissions this app might request.
         }
     }
 

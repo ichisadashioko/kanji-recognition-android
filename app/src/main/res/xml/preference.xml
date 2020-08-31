@@ -8,4 +8,8 @@
     <SwitchPreferenceCompat
         app:key="@string/pref_key_auto_evaluate_input"
         app:title="Enable auto evaluate input" />
+
+    <SwitchPreferenceCompat
+        app:key="@string/pref_key_auto_clear_canvas"
+        app:title="Enable auto clear canvas" />
 </PreferenceScreen>

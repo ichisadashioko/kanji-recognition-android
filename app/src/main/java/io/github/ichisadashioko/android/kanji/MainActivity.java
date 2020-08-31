@@ -131,16 +131,6 @@ public class MainActivity extends Activity implements TouchCallback, SharedPrefe
         customLabelEditText  = findViewById(R.id.custom_label);
         resultListScrollView = findViewById(R.id.result_container_scroll_view);
 
-        ToggleButton autoClearToggleButton = findViewById(R.id.auto_clear);
-        autoClear                          = autoClearToggleButton.isChecked();
-        autoClearToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-            {
-                autoClear = isChecked;
-            }
-        });
-
         // I add a TouchCallback interface because if we override the event listener,
         // the canvas is not working correctly. Our custom canvas manually handle touch
         // events, because of that add EventListener may break out canvas functionality.
@@ -161,6 +151,7 @@ public class MainActivity extends Activity implements TouchCallback, SharedPrefe
         ResultButton.LABEL_FONT = kanjiTypeface;
 
         autoEvaluate = isAutoEvaluateEnabled();
+        autoClear    = isAutoClearEnabled();
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
     }
@@ -181,6 +172,12 @@ public class MainActivity extends Activity implements TouchCallback, SharedPrefe
     {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPreferences.getBoolean(getString(R.string.pref_key_auto_evaluate_input), false);
+    }
+
+    public boolean isAutoClearEnabled()
+    {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getBoolean(getString(R.string.pref_key_auto_clear_canvas), false);
     }
 
     /**
@@ -635,6 +632,10 @@ public class MainActivity extends Activity implements TouchCallback, SharedPrefe
         if (key.equals(getString(R.string.pref_key_auto_evaluate_input)))
         {
             this.autoEvaluate = sharedPreferences.getBoolean(key, false);
+        }
+        else if (key.equals(getString(R.string.pref_key_auto_clear_canvas)))
+        {
+            this.autoClear = sharedPreferences.getBoolean(key, false);
         }
     }
 }
