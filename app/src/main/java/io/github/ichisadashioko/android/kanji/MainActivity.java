@@ -154,6 +154,22 @@ public class MainActivity extends Activity implements TouchCallback, SharedPrefe
         autoClear    = isAutoClearEnabled();
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int hintTextAlphaValue = Integer.parseInt(sharedPreferences.getString(getString(R.string.pref_key_hint_text_type_alpha), Integer.toString(ResultButton.DEFAULT_HINT_TEXT_ALPHA)));
+
+        if (hintTextAlphaValue < 0)
+        {
+            ResultButton.HINT_TEXT_ALPHA = 0;
+        }
+        else if (hintTextAlphaValue > 255)
+        {
+            ResultButton.HINT_TEXT_ALPHA = 255;
+        }
+        else
+        {
+            ResultButton.HINT_TEXT_ALPHA = hintTextAlphaValue;
+        }
     }
 
     /**
@@ -526,7 +542,7 @@ public class MainActivity extends Activity implements TouchCallback, SharedPrefe
                 InferenceThread.LastCreatedThreadTime = ts;
             }
 
-            System.out.println("Thread " + ts + " started!");
+            // System.out.println("Thread " + ts + " started!");
             (new InferenceThread(this, ts)).start();
         }
     }
@@ -636,6 +652,23 @@ public class MainActivity extends Activity implements TouchCallback, SharedPrefe
         else if (key.equals(getString(R.string.pref_key_auto_clear_canvas)))
         {
             this.autoClear = sharedPreferences.getBoolean(key, false);
+        }
+        else if (key.equals(getString(R.string.pref_key_hint_text_type_alpha)))
+        {
+            int hintTextAlphaValue = Integer.parseInt(sharedPreferences.getString(key, Integer.toString(ResultButton.DEFAULT_HINT_TEXT_ALPHA)));
+
+            if (hintTextAlphaValue < 0)
+            {
+                ResultButton.HINT_TEXT_ALPHA = 0;
+            }
+            else if (hintTextAlphaValue > 255)
+            {
+                ResultButton.HINT_TEXT_ALPHA = 255;
+            }
+            else
+            {
+                ResultButton.HINT_TEXT_ALPHA = hintTextAlphaValue;
+            }
         }
     }
 }

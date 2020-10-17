@@ -33,12 +33,12 @@ public class InferenceThread extends Thread
             {
                 if (creationTime != LastCreatedThreadTime)
                 {
-                    System.out.println("Thread " + creationTime + " is skipped!");
+                    // System.out.println("Thread " + creationTime + " is skipped!");
                     return;
                 }
             }
 
-            System.out.println("Thread " + creationTime + " is OK!");
+            // System.out.println("Thread " + creationTime + " is OK!");
 
             app.runOnUiThread(new Runnable() {
                 @Override

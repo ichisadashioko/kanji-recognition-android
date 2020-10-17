@@ -25,18 +25,10 @@ public class SettingsActivity extends AppCompatActivity implements ActivityCompa
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
-            setSaveWritingDataPreference(false);
+            PreferencesUtils.SetSaveWritingDataPreference(this, false);
         }
 
         getSupportFragmentManager().beginTransaction().replace(R.id.settings_container, new SettingsFragment()).commit();
-    }
-
-    public void setSaveWritingDataPreference(boolean value)
-    {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor     = sharedPreferences.edit();
-        editor.putBoolean(getString(R.string.pref_key_save_data), value);
-        editor.apply();
     }
 
     @Override
@@ -50,12 +42,12 @@ public class SettingsActivity extends AppCompatActivity implements ActivityCompa
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
                     // permission was granted, yay! Do the task you need to do.
-                    setSaveWritingDataPreference(true);
+                    PreferencesUtils.SetSaveWritingDataPreference(this, true);
                 }
                 else
                 {
                     // permission denied, boo! Disable the functionality that depends on this permission.
-                    setSaveWritingDataPreference(false);
+                    PreferencesUtils.SetSaveWritingDataPreference(this, false);
                 }
 
                 reload();
