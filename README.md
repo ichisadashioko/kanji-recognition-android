@@ -28,7 +28,7 @@ open(tflite_filename, 'wb').write(tflite)
 
 3. Add 'tensorflow-lite' to `app/build.gradle` dependencies.
 
-- **Important:** 
+- **Important:**
     - Add dependencies to the `build.gradle` in the `app` folder, not the `build.gradle` in the root project.
     - You will also need to install [Android NDK](https://developer.android.com/ndk)
 

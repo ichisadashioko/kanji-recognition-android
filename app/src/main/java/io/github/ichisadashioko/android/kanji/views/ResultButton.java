@@ -15,6 +15,9 @@ public class ResultButton extends View
 {
     public static final int LABEL_SIZE_RATIO_BITS_SHIFT      = 1;
     public static final int CONFIDENCE_SIZE_RATIO_BITS_SHIFT = 2;
+    public static final int DEFAULT_HINT_TEXT_ALPHA          = 50;
+
+    public static int HINT_TEXT_ALPHA = DEFAULT_HINT_TEXT_ALPHA;
 
     public static Typeface LABEL_FONT      = Typeface.MONOSPACE;
     public static Typeface CONFIDENCE_FONT = Typeface.MONOSPACE;
@@ -89,7 +92,17 @@ public class ResultButton extends View
     protected void onDraw(Canvas canvas)
     {
         super.onDraw(canvas);
-        mTextPaint.setColor(Color.argb(50, 255, 255, 255));
+        if (HINT_TEXT_ALPHA < 0)
+        {
+            HINT_TEXT_ALPHA = 0;
+        }
+
+        if (HINT_TEXT_ALPHA > 255)
+        {
+            HINT_TEXT_ALPHA = 255;
+        }
+
+        mTextPaint.setColor(Color.argb(HINT_TEXT_ALPHA, 255, 255, 255));
         mTextPaint.setTextSize(hintFontSize);
         mTextPaint.setTypeface(LABEL_FONT);
         canvas.drawText(charTypeHintText, hintTextLeft, hintTextBottom, mTextPaint);
