@@ -24,5 +24,4 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity"></activity>
     </application>
-
 </manifest>
