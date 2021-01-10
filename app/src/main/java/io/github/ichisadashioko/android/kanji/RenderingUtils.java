@@ -92,7 +92,7 @@ public class RenderingUtils {
         int centeringOffsetX =
                 offsetLeft + Math.round((renderWidth - (charWidth * scaleRatio)) / 2f);
         int centeringOffsetY =
-                offsetTop = Math.round((renderHeight - (charHeight * scaleRatio)) / 2f);
+                offsetTop + Math.round((renderHeight - (charHeight * scaleRatio)) / 2f);
 
         strokeIter = strokes.iterator();
 
