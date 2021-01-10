@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 
 import io.github.ichisadashioko.android.kanji.tflite.KanjiClassifier;
 import io.github.ichisadashioko.android.kanji.tflite.Recognition;
+import io.github.ichisadashioko.android.kanji.views.BitmapView;
 import io.github.ichisadashioko.android.kanji.views.CanvasPoint2D;
 import io.github.ichisadashioko.android.kanji.views.HandwritingCanvas;
 import io.github.ichisadashioko.android.kanji.views.ResultButton;
@@ -112,6 +113,8 @@ public class MainActivity extends Activity
     // I set this to `true` because the text is empty.
     public boolean isTextSaved = true;
 
+    public BitmapView bitmapView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,6 +126,7 @@ public class MainActivity extends Activity
         textRenderer = findViewById(R.id.text_renderer);
         customLabelEditText = findViewById(R.id.custom_label);
         resultListScrollView = findViewById(R.id.result_container_scroll_view);
+        bitmapView = findViewById(R.id.preview_bitmap);
 
         // I add a TouchCallback interface because if we override the event listener,
         // the canvas is not working correctly. Our custom canvas manually handle touch
@@ -422,6 +426,7 @@ public class MainActivity extends Activity
         currentEvaluatingWritingStrokes = canvas.writingStrokes;
         currentEvaluatingImage =
                 RenderingUtils.renderImageFromStrokes(currentEvaluatingWritingStrokes);
+        this.bitmapView.setBitmap(currentEvaluatingImage);
         // System.out.println("Number of strokes: " + currentEvaluatingWritingStrokes.size());
         List<Recognition> results = tflite.recognizeImage(currentEvaluatingImage);
         // long evaluateDuration = SystemClock.elapsedRealtime() - startTime;
@@ -558,6 +563,7 @@ public class MainActivity extends Activity
 
     public void clearCanvas(View view) {
         canvas.clearCanvas();
+        bitmapView.setBitmap(null);
         currentEvaluatingImage = null;
         currentEvaluatingWritingStrokes = null;
         if (resultContainer.getChildCount() > 0) {
