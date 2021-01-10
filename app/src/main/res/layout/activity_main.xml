@@ -51,7 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:onClick="clearCanvas"
-            android:text="clear canvas" />
+            android:text="clear" />
 
         <Button
             android:layout_width="wrap_content"
@@ -59,11 +59,19 @@
             android:onClick="runClassifier"
             android:text="evaluate input" />
 
+        <io.github.ichisadashioko.android.kanji.views.BitmapView
+            android:id="@+id/preview_bitmap"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="openSettings"
             android:src="@drawable/ic_settings" />
+
     </LinearLayout>
 
     <LinearLayout

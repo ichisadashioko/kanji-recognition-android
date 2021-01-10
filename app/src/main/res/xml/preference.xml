@@ -16,4 +16,8 @@
     <EditTextPreference
         app:key="@string/pref_key_hint_text_type_alpha"
         app:title="あア漢 hint alpha value" />
+
+    <EditTextPreference
+        app:key="@string/pref_key_stroke_width"
+        app:title="writing stroke width"/>
 </PreferenceScreen>
