@@ -17,6 +17,7 @@ import java.util.List;
 public class HandwritingCanvas extends View {
     public static final int VIEW_BACKGROUND_COLOR = Color.argb(255, 22, 22, 22);
     public static final int STROKE_COLOR = Color.WHITE;
+    public static int WritingStrokeWidth = 5;
 
     public TouchCallback touchCallback;
 
@@ -57,8 +58,7 @@ public class HandwritingCanvas extends View {
         writingStrokePaint.setStrokeJoin(Paint.Join.ROUND);
         writingStrokePaint.setStrokeCap(Paint.Cap.ROUND);
         writingStrokePaint.setAntiAlias(true);
-        // TODO set stroke width
-        //        writingStrokePaint.setStrokeWidth();
+        writingStrokePaint.setStrokeWidth(WritingStrokeWidth);
 
         strokePath = new Path();
         currentStroke = null;
@@ -126,6 +126,7 @@ public class HandwritingCanvas extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawRect(viewRect, viewBackgroundPaint);
+        writingStrokePaint.setStrokeWidth(WritingStrokeWidth);
         canvas.drawPath(strokePath, writingStrokePaint);
     }
 

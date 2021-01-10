@@ -21,4 +21,12 @@ public class PreferencesUtils {
         editor.putInt(context.getString(R.string.pref_key_hint_text_type_alpha), value);
         editor.apply();
     }
+
+    public static void SetWritingStrokeWidthPreference(Context context, int value) {
+        SharedPreferences sharedPreferences =
+                PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(context.getString(R.string.pref_key_stroke_width), value);
+        editor.apply();
+    }
 }

@@ -148,11 +148,17 @@ public class MainActivity extends Activity
                 .registerOnSharedPreferenceChangeListener(this);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int hintTextAlphaValue =
-                Integer.parseInt(
-                        sharedPreferences.getString(
-                                getString(R.string.pref_key_hint_text_type_alpha),
-                                Integer.toString(ResultButton.DEFAULT_HINT_TEXT_ALPHA)));
+        int hintTextAlphaValue = -1;
+        try {
+            hintTextAlphaValue =
+                    Integer.parseInt(
+                            sharedPreferences.getString(
+                                    getString(R.string.pref_key_hint_text_type_alpha),
+                                    Integer.toString(ResultButton.DEFAULT_HINT_TEXT_ALPHA)));
+        } catch (Exception ex) {
+            ex.printStackTrace(System.err);
+            System.err.println("Failed to get hint text alpha value!");
+        }
 
         if (hintTextAlphaValue < 0) {
             ResultButton.HINT_TEXT_ALPHA = 0;
@@ -160,6 +166,24 @@ public class MainActivity extends Activity
             ResultButton.HINT_TEXT_ALPHA = 255;
         } else {
             ResultButton.HINT_TEXT_ALPHA = hintTextAlphaValue;
+        }
+
+        int writingStrokeWidth = -1;
+
+        try {
+            writingStrokeWidth =
+                    Integer.parseInt(
+                            sharedPreferences.getString(
+                                    getString(R.string.pref_key_stroke_width), "5"));
+        } catch (Exception ex) {
+            ex.printStackTrace(System.err);
+            System.err.println("Failed to get writing stroke width value from preferences!");
+        }
+
+        if (writingStrokeWidth < 1) {
+            HandwritingCanvas.WritingStrokeWidth = 5;
+        } else {
+            HandwritingCanvas.WritingStrokeWidth = writingStrokeWidth;
         }
     }
 
@@ -626,6 +650,24 @@ public class MainActivity extends Activity
                 ResultButton.HINT_TEXT_ALPHA = 255;
             } else {
                 ResultButton.HINT_TEXT_ALPHA = hintTextAlphaValue;
+            }
+        } else if (key.equals(getString(R.string.pref_key_stroke_width))) {
+            int writingStrokeWidth = -1;
+
+            try {
+                writingStrokeWidth =
+                        Integer.parseInt(
+                                sharedPreferences.getString(
+                                        getString(R.string.pref_key_stroke_width), "5"));
+            } catch (Exception ex) {
+                ex.printStackTrace(System.err);
+                System.err.println("Failed to get writing stroke width value from preferences!");
+            }
+
+            if (writingStrokeWidth < 1) {
+                HandwritingCanvas.WritingStrokeWidth = 5;
+            } else {
+                HandwritingCanvas.WritingStrokeWidth = writingStrokeWidth;
             }
         }
     }

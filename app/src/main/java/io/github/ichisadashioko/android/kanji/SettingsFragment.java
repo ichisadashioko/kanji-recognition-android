@@ -58,6 +58,46 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     });
         }
 
+        EditTextPreference writingStrokeWidthPref =
+                findPreference(getString(R.string.pref_key_stroke_width));
+
+        if (writingStrokeWidthPref != null) {
+            writingStrokeWidthPref.setOnBindEditTextListener(
+                    new EditTextPreference.OnBindEditTextListener() {
+                        @Override
+                        public void onBindEditText(@NonNull EditText editText) {
+                            editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        }
+                    });
+
+            writingStrokeWidthPref.setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            if (newValue instanceof String) {
+                                int newStrokeWidthValue = -1;
+                                try {
+                                    newStrokeWidthValue = Integer.parseInt((String) newValue);
+                                } catch (Exception ex) {
+                                    ex.printStackTrace(System.err);
+                                    System.err.println(
+                                            "Failed to parse stroke width value in preference setting!");
+                                }
+
+                                if (newStrokeWidthValue < 1) {
+                                    PreferencesUtils.SetWritingStrokeWidthPreference(
+                                            thisActivity, 1);
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            } else {
+                                return false;
+                            }
+                        }
+                    });
+        }
+
         SwitchPreferenceCompat saveDataPref =
                 findPreference(getString(R.string.pref_key_save_data));
 
