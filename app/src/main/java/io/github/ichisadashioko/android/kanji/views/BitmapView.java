@@ -27,24 +27,24 @@ public class BitmapView extends View {
         if (this.bitmap != null) {
             int bitmapWidth = this.bitmap.getWidth();
             int bitmapHeight = this.bitmap.getHeight();
-            int compWidth = getWidth();
-            int compHeight = getHeight();
+            int viewWidth = getWidth();
+            int viewHeight = getHeight();
 
-            float widthRatio = (float) bitmapWidth / (float) compWidth;
-            float heightRatio = (float) bitmapHeight / (float) compHeight;
-            float ratio = Math.min(widthRatio, heightRatio);
-            float renderWidth = compWidth * ratio;
-            float renderHeight = compHeight * ratio;
-            float offsetLeft = (compWidth - renderWidth) / 2f;
-            float offsetTop = (compHeight - renderHeight) / 2f;
+            float widthScale = (float) viewWidth / (float) bitmapWidth;
+            float heightScale = (float) viewHeight / (float) bitmapHeight;
+            float scale = Math.min(widthScale, heightScale);
+            float renderWidth = bitmapWidth * scale;
+            float renderHeight = bitmapHeight * scale;
+            float offsetLeft = (viewWidth - renderWidth) / 2f;
+            float offsetTop = (viewHeight - renderHeight) / 2f;
             float renderRight = offsetLeft + renderWidth;
             float renderBottom = offsetTop + renderHeight;
-            Rect dest =
-                    new Rect(
-                            Math.round(offsetLeft),
-                            Math.round(offsetTop),
-                            Math.round(renderRight),
-                            Math.round(renderBottom));
+
+            int iLeft = Math.round(offsetLeft);
+            int iRight = Math.round(renderRight);
+            int iTop = Math.round(offsetTop);
+            int iBottom = Math.round(renderBottom);
+            Rect dest = new Rect(iLeft, iTop, iRight, iBottom);
             canvas.drawBitmap(this.bitmap, null, dest, null);
         }
     }
