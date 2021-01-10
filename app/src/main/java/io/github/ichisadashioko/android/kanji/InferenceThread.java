@@ -1,8 +1,5 @@
 package io.github.ichisadashioko.android.kanji;
 
-
-
-
 public class InferenceThread extends Thread {
     public static long SleepTimeout = 100;
     public static long LastCreatedThreadTime = -1;
