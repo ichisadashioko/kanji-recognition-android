@@ -12,3 +12,4 @@ app/build
 .settings
 .classpath
 google-java-format-1.8-all-deps.jar
+.ipynb_checkpoints
