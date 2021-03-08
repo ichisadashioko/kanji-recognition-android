@@ -4,6 +4,7 @@
     package="io.github.ichisadashioko.android.kanji">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-sdk tools:overrideLibrary="org.tensorflow.lite.support"/>
 
     <application
         android:allowBackup="true"
