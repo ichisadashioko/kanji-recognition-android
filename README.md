@@ -1,6 +1,6 @@
 # Kanji Handwriting Input on Android with TensorFlow Lite
 
-![Imgur](https://i.imgur.com/DHxXd0F.png)
+![灯華](https://i.imgur.com/k8dU7ed.png)
 
 [Demo video](https://youtu.be/NzCLFQ-zo3k)
 
