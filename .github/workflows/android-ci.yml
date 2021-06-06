@@ -37,7 +37,7 @@ jobs:
       run: gradle wrapper
 
     - name: Build project
-      run: bash ./gradlew build
+      run: bash ./gradlew build --debug
 
     - uses: actions/upload-artifact@v2
       with:
