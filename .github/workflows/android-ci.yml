@@ -1,6 +1,5 @@
-name: Android CI
-
-on: [push, pull_request]
+name: CI
+on: workflow_dispatch
 
 jobs:
   build:
