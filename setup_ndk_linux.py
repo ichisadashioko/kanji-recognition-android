@@ -9,6 +9,13 @@ if __name__ == '__main__':
 
     ndk_filepath = os.path.abspath(ndk_filepath)
 
+    # set persistent environment variable
+    custom_bashrc_filepath = os.path.abspath('custom_bashrc')
+    with open(custom_bashrc_filepath, mode='ab+') as outfile:
+        outfile.write(f'\nexport ANDROID_NDK_HOME={ndk_filepath}\n'.encode('utf-8'))
+    cmd_str = f'source {custom_bashrc_filepath}'
+    print(cmd_str)
+
     gradle_props_filepath = 'local.properties'
 
     content = ''

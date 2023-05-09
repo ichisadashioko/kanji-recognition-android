@@ -25,6 +25,7 @@ jobs:
 
     - name: setup ndk.dir for gradle
       run: python3 setup_ndk_linux.py
+      run: source ./custom_bashrc
 
     - name: show directory structure
       run: tree .
@@ -33,7 +34,9 @@ jobs:
       run: which gradle
 
     - name: Setup Gradle
-      run: gradle wrapper
+      run: wget https://services.gradle.org/distributions/gradle-6.5-bin.zip
+      run: unzip gradle-6.5-bin.zip
+      run: ./gradle-6.5/bin/gradle wrapper
 
     - name: Build project
       run: bash ./gradlew build
