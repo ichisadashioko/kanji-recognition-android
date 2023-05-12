@@ -8,6 +8,16 @@ if __name__ == '__main__':
         raise Exception(ndk_filepath + ' does not exist!')
 
     ndk_filepath = os.path.abspath(ndk_filepath)
+    android_sdk_root = os.path.abspath('ANDROID_SDK_ROOT')
+
+    # set persistent environment variable
+    custom_bashrc_filepath = os.path.abspath('custom_bashrc.sh')
+    with open(custom_bashrc_filepath, mode='ab+') as outfile:
+        outfile.write(f'\nexport ANDROID_NDK_HOME={ndk_filepath}\n'.encode('utf-8'))
+        outfile.write(f'\nexport ANDROID_SDK_HOME={android_sdk_root}'.encode('utf-8'))
+
+    cmd_str = f'source {custom_bashrc_filepath}'
+    print(cmd_str)
 
     gradle_props_filepath = 'local.properties'
 
@@ -24,4 +34,8 @@ if __name__ == '__main__':
     else:
         content = 'ndk.dir=' + ndk_filepath + '\n'
 
-    open(gradle_props_filepath, mode='wb').write(content.encode('utf-8'))
+    with open(gradle_props_filepath, mode='ab+') as outfile:
+        outfile.write(f'''
+ndk.dir={ndk_filepath}
+sdk.dir={android_sdk_root}
+'''.encode('utf-8'))
