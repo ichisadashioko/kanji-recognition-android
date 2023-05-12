@@ -16,3 +16,7 @@ google-java-format-1.8-all-deps.jar
 android-ndk-r20b
 gradle-6.5
 custom_bashrc
+cmdline-tools
+ANDROID_SDK_ROOT
+build
+custom_bashrc.sh
